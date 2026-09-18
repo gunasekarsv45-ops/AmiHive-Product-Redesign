@@ -33,19 +33,27 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
-  const [page, setPage] = useState(
-    window.location.hash === '#product' ? 'product' : 'home'
-  );
+  const getPage = () => {
+    const path = window.location.pathname;
+
+    if (path === '/product') {
+      return 'product';
+    }
+
+    return 'home';
+  };
+
+  const [page, setPage] = useState(getPage);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setPage(window.location.hash === '#product' ? 'product' : 'home');
+    const handlePopState = () => {
+      setPage(getPage());
     };
 
-    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
 
     return () => {
-      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handlePopState);
     };
   }, []);
 
