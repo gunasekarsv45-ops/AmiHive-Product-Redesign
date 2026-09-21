@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Home from './pages/Customer/Home/Home';
+import Home1 from './pages/Customer/Home1/Home1';
 import ProductDesign2 from './pages/Customer/ProductDesign2/ProductDesign2';
 
 class ErrorBoundary extends React.Component {
@@ -32,34 +33,29 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+function getPage() {
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+
+  if (path === '/product') return 'product';
+  if (path === '/home-old') return 'home'; // original Home
+  return 'home1'; // "/" and "/home1" -> new Home1
+}
+
 function App() {
-  const getPage = () => {
-    const path = window.location.pathname;
-
-    if (path === '/product') {
-      return 'product';
-    }
-
-    return 'home';
-  };
-
   const [page, setPage] = useState(getPage);
 
   useEffect(() => {
-    const handlePopState = () => {
-      setPage(getPage());
-    };
+    const handlePopState = () => setPage(getPage());
 
     window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   return (
     <ErrorBoundary>
-      {page === 'product' ? <ProductDesign2 /> : <Home />}
+      {page === 'product' && <ProductDesign2 />}
+      {page === 'home1' && <Home1 />}
+      {page === 'home' && <Home />}
     </ErrorBoundary>
   );
 }

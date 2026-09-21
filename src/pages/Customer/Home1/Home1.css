@@ -1,0 +1,1928 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap');
+
+/* ==================================================================
+   TOKENS
+   Every spacing / size used across the page comes from here, so
+   padding, gaps and heights stay consistent in all sections.
+   ================================================================== */
+.ah-root {
+  /* colour */
+  --ink: #0f1a1d;
+  --petrol: #0b3a40;
+  --petrol-2: #12525a;
+  --signal: #f2542d;
+  --signal-dark: #d8431e;
+  --steel: #c8d1d4;
+  --mist: #e9eeef;
+  --paper: #f6f8f8;
+  --line: #d9e0e2;
+  --muted: #56666b;
+  --ok: #17694f;
+  --star: #e29a1c;
+
+  /* type */
+  --font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+
+  /* layout */
+  --gutter: clamp(16px, 4vw, 40px);
+  --section-y: clamp(56px, 8vw, 104px);
+  --head-mb: clamp(24px, 3.5vw, 40px);
+  --gap-card: 20px; /* product cards, deals rail */
+  --gap-tile: 16px; /* image mosaics: bento + gallery */
+
+  /* fixed chrome heights (hero height is calculated from these) */
+  --ticker-h: 40px;
+  --header-h: 72px;
+  --hero-bar: 112px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* low-specificity resets so component classes always win */
+:where(.ah-root) *,
+:where(.ah-root) *::before,
+:where(.ah-root) *::after {
+  box-sizing: border-box;
+}
+
+:where(.ah-root) h1,
+:where(.ah-root) h2,
+:where(.ah-root) h3,
+:where(.ah-root) h4,
+:where(.ah-root) p,
+:where(.ah-root) figure,
+:where(.ah-root) blockquote,
+:where(.ah-root) fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.ah-root) fieldset {
+  border: 0;
+  min-width: 0;
+}
+
+:where(.ah-root) img {
+  display: block;
+  max-width: 100%;
+}
+
+:where(.ah-root) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.ah-root) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ah-root :focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* smooth anchor scrolling (only when the user has not asked for less motion) */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.ah-root) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* anchor targets land with the heading just below the sticky header */
+.ah-root section[id] {
+  scroll-margin-top: calc(var(--header-h) - var(--section-y) + 24px);
+}
+
+.ah-root #gallery {
+  scroll-margin-top: calc(var(--header-h) + 24px);
+}
+
+.ah-icon {
+  flex: none;
+}
+
+.ah-muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ==================================================================
+   LAYOUT PRIMITIVES
+   ================================================================== */
+.ah-wrap {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.ah-section {
+  padding-block: var(--section-y);
+}
+
+/* bestsellers and gallery share a background, so only one gap is used */
+.ah-root #featured + .pg {
+  padding-top: 0;
+}
+
+.ah-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: var(--head-mb);
+}
+
+.ah-head h2,
+.ah-build h2,
+.ah-news h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.6vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.ah-head p {
+  max-width: 38ch;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* buttons */
+.ah-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease);
+}
+
+.ah-btn:active {
+  transform: scale(0.97);
+}
+
+.ah-btn--sm {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+.ah-btn--block {
+  width: 100%;
+}
+
+.ah-btn--signal {
+  background: var(--signal);
+  color: #fff;
+}
+
+.ah-btn--signal:hover {
+  background: var(--signal-dark);
+}
+
+.ah-btn--ink {
+  background: var(--ink);
+  color: #fff;
+}
+
+.ah-btn--ink:hover {
+  background: var(--petrol-2);
+}
+
+.ah-btn--line {
+  border: 1.5px solid var(--ink);
+}
+
+.ah-btn--line:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.ah-round {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  color: #fff;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.ah-round:hover {
+  background: var(--signal);
+  border-color: var(--signal);
+}
+
+.ah-round--dark {
+  border-color: var(--line);
+  color: var(--ink);
+  background: #fff;
+}
+
+.ah-round--dark:hover {
+  color: #fff;
+}
+
+.ah-stars {
+  display: inline-flex;
+  gap: 1px;
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--steel);
+}
+
+.ah-stars .is-on {
+  color: var(--star);
+}
+
+.ah-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.ah-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ah-price strong {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.ah-price s {
+  font-size: 13px;
+  color: #7d8a8e;
+}
+
+/* ==================================================================
+   TICKER  (fixed height so the hero can be calculated exactly)
+   ================================================================== */
+.ah-ticker {
+  display: flex;
+  align-items: center;
+  height: var(--ticker-h);
+  background: var(--petrol);
+  color: #d5e4e5;
+  font-size: 12.5px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ah-ticker__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: ah-marquee 42s linear infinite;
+}
+
+.ah-ticker:hover .ah-ticker__track {
+  animation-play-state: paused;
+}
+
+.ah-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 56px;
+}
+
+.ah-ticker__item::after {
+  content: '';
+  width: 1px;
+  height: 11px;
+  margin-left: 56px;
+  background: rgba(213, 228, 229, 0.35);
+}
+
+@keyframes ah-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ==================================================================
+   HEADER
+   ================================================================== */
+.ah-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: rgba(246, 248, 248, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ah-header.is-scrolled {
+  border-color: var(--line);
+  box-shadow: 0 10px 28px -20px rgba(11, 58, 64, 0.55);
+}
+
+.ah-header__row {
+  display: grid;
+  grid-template-columns: auto 1fr minmax(200px, 280px) auto;
+  grid-template-areas: 'logo nav search actions';
+  align-items: center;
+  column-gap: clamp(16px, 2.2vw, 28px);
+  height: calc(var(--header-h) - 1px); /* 1px = header border */
+}
+
+/* burger is mobile-only (higher specificity than .ah-iconbtn) */
+.ah-header .ah-burger {
+  grid-area: burger;
+  display: none;
+}
+
+.ah-logo {
+  grid-area: logo;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.04em;
+  color: var(--petrol);
+}
+
+.ah-logo__hand {
+  width: 7px;
+  height: 7px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.ah-nav {
+  grid-area: nav;
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 2.4vw, 34px);
+}
+
+.ah-nav a {
+  position: relative;
+  padding-block: 6px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #2b3b3f;
+}
+
+.ah-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease);
+}
+
+.ah-nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.ah-search {
+  grid-area: search;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  padding-left: 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ah-search:focus-within {
+  border-color: var(--petrol-2);
+  box-shadow: 0 0 0 3px rgba(18, 82, 90, 0.16);
+}
+
+.ah-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.ah-search button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 100%;
+  color: var(--petrol);
+}
+
+.ah-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ah-iconbtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.ah-iconbtn:hover {
+  background: var(--mist);
+}
+
+.ah-count {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--signal);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  animation: ah-bump 0.45s var(--ease);
+}
+
+@keyframes ah-bump {
+  0% {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ==================================================================
+   HERO CAROUSEL
+   Height = viewport - ticker - header, so ticker + header + hero
+   always fit the first screen exactly. Every slide is identical.
+   ================================================================== */
+.ah-hero {
+  position: relative;
+  width: 100%;
+  height: clamp(520px, calc(100vh - var(--ticker-h) - var(--header-h)), 760px);
+  height: clamp(520px, calc(100svh - var(--ticker-h) - var(--header-h)), 760px);
+  background: var(--petrol);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ah-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, visibility 0s linear 1s;
+}
+
+.ah-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1s ease, visibility 0s;
+  z-index: 1;
+}
+
+.ah-slide__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+}
+
+.ah-slide.is-active .ah-slide__img {
+  animation: ah-drift 7.5s ease-out both;
+}
+
+@keyframes ah-drift {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.ah-slide__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6, 34, 39, 0.92) 0%, rgba(6, 34, 39, 0.72) 36%, rgba(6, 34, 39, 0.16) 68%, rgba(6, 34, 39, 0) 100%),
+    linear-gradient(0deg, rgba(6, 34, 39, 0.7) 0%, rgba(6, 34, 39, 0) 32%);
+}
+
+/* copy is centred in the area above the bottom bar */
+.ah-slide__inner {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--hero-bar);
+}
+
+.ah-slide__copy {
+  max-width: 580px;
+  color: #fff;
+}
+
+.ah-slide__tag {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ah-slide__title {
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(38px, 5.6vw, 76px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.ah-slide__text {
+  margin-top: 18px;
+  max-width: 44ch;
+  font-size: clamp(16px, 1.4vw, 19px);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.ah-slide__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.ah-slide__price {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* one orchestrated entrance, replayed every time a slide becomes active */
+.ah-slide.is-active .ah-rise {
+  animation: ah-rise 0.9s var(--ease) both;
+  animation-delay: calc(var(--d) * 110ms + 250ms);
+}
+
+@keyframes ah-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* bottom bar: fixed height, slide tabs drawn as a watch minute-track */
+.ah-hero__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  height: var(--hero-bar);
+  padding-bottom: 24px;
+  background: linear-gradient(0deg, rgba(4, 26, 30, 0.72), rgba(4, 26, 30, 0));
+}
+
+.ah-hero__barinner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+}
+
+.ah-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 3vw, 40px);
+}
+
+.ah-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.62);
+  transition: color 0.3s ease;
+}
+
+.ah-tab:hover,
+.ah-tab.is-active {
+  color: #fff;
+}
+
+.ah-tab__name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ah-ticks {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 16px;
+  width: 100%;
+}
+
+.ah-tick {
+  width: 2px;
+  height: 9px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.ah-tick:nth-child(6n + 1) {
+  height: 16px;
+}
+
+.ah-tab.is-active .ah-tick {
+  animation: ah-tick-on 0.25s ease forwards;
+  animation-delay: calc(var(--i) * var(--step));
+}
+
+.ah-hero.is-paused .ah-tick {
+  animation-play-state: paused;
+}
+
+@keyframes ah-tick-on {
+  to {
+    background: var(--signal);
+  }
+}
+
+.ah-hero__arrows {
+  display: flex;
+  gap: 10px;
+}
+
+/* ==================================================================
+   ASSURANCES
+   ================================================================== */
+.ah-assure {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.ah-assure__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ah-assure__item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 24px;
+  border-left: 1px solid var(--line);
+}
+
+.ah-assure__item:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.ah-assure__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--mist);
+  color: var(--petrol);
+}
+
+.ah-assure__item strong {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.ah-assure__item em {
+  display: block;
+  font-style: normal;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ==================================================================
+   CATEGORY BENTO
+   ================================================================== */
+.ah-bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: clamp(190px, 17vw, 240px);
+  gap: var(--gap-tile);
+}
+
+.ah-tile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--mist);
+  color: #fff;
+  isolation: isolate;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.8s var(--ease);
+  transition-delay: calc(var(--i) * 90ms);
+}
+
+.ah-bento.is-in .ah-tile {
+  opacity: 1;
+  transform: none;
+}
+
+.ah-tile--lead {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+}
+
+.ah-tile__img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1s var(--ease);
+}
+
+.ah-tile:hover .ah-tile__img {
+  transform: scale(1.07);
+}
+
+.ah-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgba(6, 34, 39, 0.82) 0%, rgba(6, 34, 39, 0.05) 60%);
+}
+
+.ah-tile__label {
+  position: absolute;
+  left: 20px;
+  right: 72px;
+  bottom: 18px;
+}
+
+.ah-tile__label strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.ah-tile--lead .ah-tile__label strong {
+  font-size: clamp(26px, 2.6vw, 36px);
+}
+
+.ah-tile__label em {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.ah-tile__go {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  transition: background 0.3s ease, transform 0.4s var(--ease);
+}
+
+.ah-tile:hover .ah-tile__go {
+  background: var(--signal);
+  transform: translateX(-4px);
+}
+
+/* ==================================================================
+   DEALS RAIL
+   Card width is calculated from the column count, so the visible
+   cards always end flush with the container edge.
+   ================================================================== */
+.ah-deals {
+  background: #fff;
+  border-block: 1px solid var(--line);
+}
+
+.ah-countdown {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ah-clock {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.ah-clock b {
+  min-width: 46px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: var(--petrol);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ah-rail-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.ah-rail {
+  --cols: 4;
+  display: flex;
+  gap: var(--gap-card);
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.ah-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.ah-deal {
+  flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap-card)) / var(--cols));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  scroll-snap-align: start;
+}
+
+.ah-deal__media {
+  position: relative;
+  aspect-ratio: 4 / 4.6;
+  background: var(--mist);
+  overflow: hidden;
+}
+
+.ah-deal__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease);
+}
+
+.ah-deal:hover .ah-deal__img {
+  transform: scale(1.05);
+}
+
+.ah-deal__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--signal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ah-deal__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+  padding: 16px;
+}
+
+.ah-deal__body > strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ah-save {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.ah-deal__body .ah-btn {
+  margin-top: auto;
+}
+
+.ah-deal__body .ah-save + .ah-btn {
+  margin-top: 10px;
+}
+
+/* ==================================================================
+   BUILD YOUR OWN
+   ================================================================== */
+.ah-build {
+  background: var(--petrol);
+  color: #fff;
+}
+
+.ah-build h2 {
+  color: #fff;
+}
+
+.ah-build__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 88px);
+}
+
+.ah-build__stage {
+  position: relative;
+  aspect-ratio: 4 / 4.6;
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--petrol-2);
+}
+
+.ah-build__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: ah-fade 0.7s var(--ease) both;
+}
+
+.ah-build__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(6, 34, 39, 0.72) 0%, rgba(6, 34, 39, 0) 42%);
+  pointer-events: none;
+}
+
+.ah-build__chip {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.ah-build__inset {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: clamp(92px, 24%, 120px);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  background: var(--petrol);
+  box-shadow: 0 16px 36px -16px rgba(0, 0, 0, 0.6);
+  animation: ah-pop 0.5s var(--ease) both;
+}
+
+.ah-build__inset-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.ah-build__inset figcaption {
+  padding: 6px 8px;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+}
+
+@keyframes ah-fade {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ah-build__lead {
+  margin-top: 16px;
+  max-width: 42ch;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.ah-opt {
+  margin-top: 28px;
+}
+
+.ah-opt legend {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ah-opt legend span {
+  font-size: 13.5px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.ah-opt__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ah-swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.ah-swatch:hover {
+  transform: scale(1.08);
+}
+
+.ah-swatch.is-on {
+  box-shadow: 0 0 0 3px var(--petrol), 0 0 0 5px #fff;
+}
+
+.ah-seg {
+  height: 42px;
+  padding: 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.ah-seg:hover {
+  border-color: #fff;
+}
+
+.ah-seg.is-on {
+  background: #fff;
+  border-color: #fff;
+  color: var(--petrol);
+}
+
+.ah-build__buy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 36px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ah-build__label {
+  display: block;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.ah-build__price {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  animation: ah-pop 0.5s var(--ease) both;
+}
+
+/* ==================================================================
+   BESTSELLERS
+   ================================================================== */
+.ah-head--filters {
+  align-items: center;
+}
+
+.ah-searchnote {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.ah-searchnote button {
+  margin-left: 6px;
+  font-weight: 600;
+  color: var(--signal-dark);
+  text-decoration: underline;
+}
+
+.ah-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ah-chip {
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.ah-chip:hover {
+  border-color: var(--ink);
+}
+
+.ah-chip.is-on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.ah-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap-card);
+  align-items: stretch;
+}
+
+.ah-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  animation: ah-pop 0.55s var(--ease) both;
+  animation-delay: calc(var(--i) * 60ms);
+}
+
+.ah-card__media {
+  position: relative;
+  aspect-ratio: 4 / 4.8;
+  background: var(--mist);
+  overflow: hidden;
+}
+
+.ah-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease);
+}
+
+.ah-card:hover .ah-card__img {
+  transform: scale(1.05);
+}
+
+.ah-wish {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  transition: color 0.2s ease, transform 0.3s var(--ease);
+}
+
+.ah-wish:hover {
+  transform: scale(1.08);
+}
+
+.ah-wish.is-on {
+  color: var(--signal);
+  animation: ah-bump 0.45s var(--ease);
+}
+
+.ah-wish.is-on svg {
+  fill: currentColor;
+}
+
+.ah-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+  padding: 16px;
+}
+
+.ah-card__body > strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ah-card__body .ah-btn {
+  margin-top: auto;
+}
+
+.ah-card__body .ah-price + .ah-btn {
+  margin-top: 12px;
+}
+
+.ah-empty {
+  padding: 48px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+@keyframes ah-pop {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==================================================================
+   REVIEWS
+   ================================================================== */
+.ah-voices {
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+
+.ah-voices__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
+}
+
+.ah-voices__main {
+  animation: ah-pop 0.7s var(--ease) both;
+}
+
+.ah-voices__main .ah-stars {
+  font-size: 20px;
+}
+
+.ah-voices__main blockquote {
+  max-width: 30ch;
+  margin-top: 20px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(26px, 3.2vw, 42px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.ah-voices__main p {
+  margin-top: 24px;
+}
+
+.ah-voices__main p strong {
+  display: block;
+  font-size: 16px;
+}
+
+.ah-voices__main p em {
+  font-style: normal;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ah-voices__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ah-voice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px 18px;
+  overflow: hidden;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.ah-voice.is-active {
+  background: #fff;
+  border-color: var(--petrol-2);
+}
+
+.ah-voice__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--petrol);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ah-voice__who strong {
+  display: block;
+  font-size: 15px;
+}
+
+.ah-voice__who em {
+  font-style: normal;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ah-voice__bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0;
+  background: var(--signal);
+}
+
+.ah-voice.is-active .ah-voice__bar {
+  animation: ah-fill 7s linear forwards;
+}
+
+@keyframes ah-fill {
+  to {
+    width: 100%;
+  }
+}
+
+/* ==================================================================
+   NEWSLETTER
+   ================================================================== */
+.ah-news {
+  padding-block: clamp(44px, 6vw, 72px);
+  background: var(--mist);
+}
+
+.ah-news__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 28px 48px;
+}
+
+.ah-news h2 {
+  font-size: clamp(26px, 3vw, 36px);
+}
+
+.ah-news p {
+  margin-top: 10px;
+  max-width: 44ch;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.ah-news__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1 1 380px;
+  max-width: 520px;
+}
+
+.ah-news__form input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 20px;
+  border: 1px solid var(--steel);
+  border-radius: 999px;
+  outline: 0;
+  background: #fff;
+  font: inherit;
+  font-size: 15px;
+}
+
+.ah-news__form input:focus {
+  border-color: var(--petrol-2);
+  box-shadow: 0 0 0 3px rgba(18, 82, 90, 0.16);
+}
+
+.ah-news__form .ah-news__ok {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+  color: var(--ok);
+  font-size: 14px;
+  font-weight: 500;
+  animation: ah-pop 0.5s var(--ease) both;
+}
+
+/* ==================================================================
+   FOOTER
+   ================================================================== */
+.ah-footer {
+  position: relative;
+  overflow: hidden;
+  background: #08282c;
+  color: #b4c8ca;
+}
+
+.ah-footer__grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 32px;
+  padding-top: clamp(44px, 6vw, 72px);
+  padding-bottom: 36px;
+}
+
+.ah-footer__brand strong {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.ah-footer__brand p {
+  max-width: 32ch;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.ah-footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ah-footer__col h4 {
+  margin-bottom: 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ah-footer__col a {
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.ah-footer__col a:hover {
+  color: var(--signal);
+}
+
+.ah-footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  color: #86a0a3;
+}
+
+.ah-footer__mark {
+  margin-top: 8px;
+  margin-bottom: -0.14em;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(90px, 22vw, 330px);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.055);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ==================================================================
+   TOAST
+   ================================================================== */
+.ah-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  padding: 13px 20px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%);
+  animation: ah-toast 0.4s var(--ease) both;
+}
+
+@keyframes ah-toast {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ==================================================================
+   RESPONSIVE
+   ================================================================== */
+
+/* header collapses here (nav no longer fits beside the search) */
+@media (max-width: 1080px) {
+  .ah-root {
+    --header-h: 116px;
+  }
+
+  .ah-header__row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      'burger logo actions'
+      'search search search';
+    align-content: center;
+    row-gap: 10px;
+    column-gap: 12px;
+  }
+
+  .ah-header .ah-burger {
+    display: grid;
+    margin-left: -8px;
+  }
+
+  .ah-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 8px var(--gutter) 16px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 24px 40px -24px rgba(11, 58, 64, 0.5);
+  }
+
+  .ah-nav.is-open {
+    display: flex;
+    animation: ah-pop 0.3s var(--ease) both;
+  }
+
+  .ah-nav a {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 16px;
+  }
+
+  .ah-nav a:last-child {
+    border-bottom: 0;
+  }
+
+  .ah-nav a::after {
+    display: none;
+  }
+
+  .ah-iconbtn--account {
+    display: none;
+  }
+
+  .ah-rail {
+    --cols: 3;
+  }
+
+  .ah-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ah-footer__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 960px) {
+  .ah-assure__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ah-assure__item:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .ah-assure__item:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+
+  .ah-build__grid,
+  .ah-voices__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ah-build__stage {
+    aspect-ratio: 4 / 3.6;
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 820px) {
+  .ah-rail {
+    --cols: 2;
+  }
+}
+
+@media (max-width: 720px) {
+  .ah-root {
+    --gap-card: 12px;
+    --gap-tile: 12px;
+  }
+
+  .ah-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ah-head--deals {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  /* hero: copy sits just above the tabs, arrows hide, tabs stay */
+  .ah-hero {
+    height: clamp(560px, calc(100vh - var(--ticker-h) - var(--header-h)), 720px);
+    height: clamp(560px, calc(100svh - var(--ticker-h) - var(--header-h)), 720px);
+  }
+
+  .ah-slide__shade {
+    background: linear-gradient(0deg, rgba(6, 34, 39, 0.95) 0%, rgba(6, 34, 39, 0.72) 48%, rgba(6, 34, 39, 0.15) 100%);
+  }
+
+  .ah-slide__inner {
+    align-items: flex-end;
+    padding-bottom: calc(var(--hero-bar) + 4px);
+  }
+
+  .ah-slide__title {
+    font-size: clamp(34px, 9.5vw, 46px);
+  }
+
+  .ah-hero__barinner {
+    grid-template-columns: 1fr;
+  }
+
+  .ah-hero__arrows {
+    display: none;
+  }
+
+  .ah-tab__name {
+    font-size: 12.5px;
+  }
+
+  .ah-bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 170px;
+  }
+
+  .ah-tile--lead {
+    grid-column: 1 / -1;
+    grid-row: span 2;
+  }
+
+  .ah-tile__label {
+    left: 14px;
+    right: 56px;
+    bottom: 14px;
+  }
+
+  .ah-tile__label strong {
+    font-size: 16px;
+  }
+
+  .ah-tile__label em {
+    display: none;
+  }
+
+  .ah-tile--lead .ah-tile__label em {
+    display: block;
+  }
+
+  .ah-tile__go {
+    right: 12px;
+    bottom: 12px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .ah-deal {
+    flex-basis: 78%;
+  }
+
+  .ah-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ah-card__body {
+    padding: 12px;
+  }
+
+  .ah-card__body > strong {
+    font-size: 16px;
+  }
+
+  .ah-build__chip {
+    top: 14px;
+    left: 14px;
+    font-size: 12.5px;
+  }
+
+  .ah-build__inset {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .ah-build__buy .ah-btn {
+    width: 100%;
+  }
+
+  .ah-news__form {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .ah-news__form .ah-btn {
+    width: 100%;
+  }
+
+  .ah-footer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 20px;
+  }
+
+  .ah-footer__brand {
+    grid-column: 1 / -1;
+  }
+
+  .ah-footer__bottom {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ah-ticker__item {
+    padding-left: 36px;
+  }
+
+  .ah-ticker__item::after {
+    margin-left: 36px;
+  }
+
+  .ah-clock b {
+    min-width: 40px;
+    font-size: 18px;
+  }
+}
+
+/* ==================================================================
+   REDUCED MOTION
+   ================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ah-root *,
+  .ah-root *::before,
+  .ah-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .ah-ticker__track {
+    animation: none;
+  }
+
+  .ah-tile {
+    opacity: 1;
+    transform: none;
+  }
+}
