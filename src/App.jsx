@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Home from './pages/Customer/Home/Home';
 import Home1 from './pages/Customer/Home1/Home1';
 import ProductDesign2 from './pages/Customer/ProductDesign2/ProductDesign2';
+import ProductRedesign1 from './pages/Customer/ProductRedesign1/ProductRedesign1';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -33,29 +34,42 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-function getPage() {
+/* Reads the current route + optional ?id= query param used by the
+   product overview page. Home1 (and the related-products rail on the
+   overview page) navigate here with window.history.pushState + a
+   manual 'popstate' dispatch, so no router library is needed. */
+function getRoute() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
 
-  if (path === '/product') return 'product';
-  if (path === '/home-old') return 'home'; // original Home
-  return 'home1'; // "/" and "/home1" -> new Home1
+  if (path === '/product') return { page: 'product', productId };
+  if (path === '/product-design2') return { page: 'product-design2', productId: null };
+  if (path === '/home-old') return { page: 'home', productId: null }; // original Home
+  return { page: 'home1', productId: null }; // "/" and "/home1" -> new Home1
 }
 
 function App() {
-  const [page, setPage] = useState(getPage);
+  const [route, setRoute] = useState(getRoute);
 
   useEffect(() => {
-    const handlePopState = () => setPage(getPage());
+    const handlePopState = () => setRoute(getRoute());
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  const goHome = () => {
+    window.history.pushState({}, '', '/');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
   return (
     <ErrorBoundary>
-      {page === 'product' && <ProductDesign2 />}
-      {page === 'home1' && <Home1 />}
-      {page === 'home' && <Home />}
+      {route.page === 'product' && <ProductRedesign1 productId={route.productId} onBack={goHome} />}
+      {route.page === 'product-design2' && <ProductDesign2 />}
+      {route.page === 'home1' && <Home1 />}
+      {route.page === 'home' && <Home />}
     </ErrorBoundary>
   );
 }

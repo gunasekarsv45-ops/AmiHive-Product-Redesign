@@ -10,7 +10,7 @@ const QUOTE_MS = 7000; // time each review stays on screen
 const TICKS = 24; // tick marks in each carousel progress track
 const BASE_PRICE = 16990;
 
-const ICONS = {
+export const ICONS = {
   search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4.2-4.2',
   heart: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 20a7 7 0 0 1 14 0',
@@ -79,7 +79,7 @@ const BANNERS = [
   },
 ];
 
-const ASSURANCES = [
+export const ASSURANCES = [
   { icon: 'truck', title: 'Insured shipping', text: 'Free on every order' },
   { icon: 'shield', title: 'Certified original', text: 'Every piece verified' },
   { icon: 'clock', title: '2 year warranty', text: 'On all movements' },
@@ -94,7 +94,7 @@ const CATEGORIES = [
   { name: 'Accessories and gifts', note: 'Rolls, cases, gift sets', image: 'desk' },
 ];
 
-const DEALS = [
+export const DEALS = [
   { id: 'd1', name: 'Aster No.04', subtitle: 'Automatic blue dial', price: 18990, originalPrice: 21990, discount: 14, rating: 4.7, image: 'aster' },
   { id: 'd2', name: 'Aster No.02', subtitle: 'Chronograph', price: 22990, originalPrice: 27990, discount: 18, rating: 4.6, image: 'goldWrist' },
   { id: 'd3', name: 'Meridian Steel', subtitle: 'Jubilee bracelet', price: 24990, originalPrice: 28990, discount: 13, rating: 4.8, image: 'steelLine' },
@@ -102,7 +102,7 @@ const DEALS = [
   { id: 'd5', name: 'Urban No.03', subtitle: 'Everyday field watch', price: 14990, originalPrice: 17990, discount: 17, rating: 4.4, image: 'blackDial' },
 ];
 
-const PRODUCTS = [
+export const PRODUCTS = [
   { id: 'f1', type: 'watch', name: 'Aster No.04', subtitle: 'Automatic blue dial watch', price: 18990, originalPrice: 21990, rating: 4.7, ratings: 284, image: 'wristBlack' },
   { id: 'f2', type: 'strap', name: 'Signature Clasp', subtitle: 'Steel jubilee strap', price: 3490, originalPrice: 3990, rating: 4.6, ratings: 96, image: 'jubilee' },
   { id: 'f3', type: 'watch', name: 'Aster No.01', subtitle: 'Classic everyday', price: 16990, originalPrice: 19990, rating: 4.8, ratings: 412, image: 'goldClose' },
@@ -120,7 +120,7 @@ const FILTERS = [
   { id: 'accessory', label: 'Accessories' },
 ];
 
-const TESTIMONIALS = [
+export const TESTIMONIALS = [
   { initials: 'AK', name: 'Arjun K.', date: '2 weeks ago', rating: 5, text: 'The blue dial looks significantly better in person. Proportions are exactly what I wanted.' },
   { initials: 'RM', name: 'Rahul M.', date: '1 month ago', rating: 5, text: 'Leather feels premium and the watch sits with a really balanced presence on the wrist.' },
   { initials: 'SN', name: 'Sneha N.', date: '1 month ago', rating: 4, text: 'Great everyday watch, packaging and delivery were both excellent.' },
@@ -129,23 +129,32 @@ const TESTIMONIALS = [
 /* Build-your-own options.
    `photo` is a key from PHOTO in ProductGallery.jsx. Swap these keys
    (or the Unsplash ids there) for your real product photos. */
-const DIALS = [
+export const DIALS = [
   { id: 'blue', name: 'Sunburst blue', color: '#1d4c8c', photo: 'aster' },
   { id: 'slate', name: 'Slate grey', color: '#46525a', photo: 'blackDial' },
   { id: 'forest', name: 'Forest green', color: '#1c5a44', photo: 'darkFace' },
 ];
 
-const STRAPS = [
+export const STRAPS = [
   { id: 'leather', name: 'Cognac leather', extra: 0, photo: 'strap' },
   { id: 'steel', name: 'Steel jubilee', extra: 3490, photo: 'jubilee' },
 ];
 
-const SIZES = [38, 40, 42];
+export const SIZES = [38, 40, 42];
 
 /* ------------------------------------------------------------------
    HELPERS
 ------------------------------------------------------------------- */
-const formatPrice = (value) => new Intl.NumberFormat('en-IN').format(value);
+export const formatPrice = (value) => new Intl.NumberFormat('en-IN').format(value);
+
+/* Client-side "navigation" with no router library: push the URL and
+   fire a manual popstate so App.jsx's listener picks it up. Used by
+   the Bestseller/Deal cards here, and by the related-products rail
+   on ProductRedesign1. */
+export function goToProductPage(id) {
+  window.history.pushState({}, '', `/product?id=${id}`);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+}
 
 function msUntilMidnight() {
   const now = new Date();
@@ -197,7 +206,7 @@ function useInView(threshold = 0.2) {
   return [ref, seen];
 }
 
-function Icon({ name, size = 20 }) {
+export function Icon({ name, size = 20 }) {
   return (
     <svg
       className="ah-icon"
@@ -216,7 +225,7 @@ function Icon({ name, size = 20 }) {
   );
 }
 
-function Stars({ value }) {
+export function Stars({ value }) {
   const filled = Math.round(value);
   return (
     <span className="ah-stars" role="img" aria-label={`${value} out of 5`}>
@@ -237,6 +246,10 @@ function Configurator({ onAdd }) {
   const [strap, setStrap] = useState(STRAPS[0]);
   const [size, setSize] = useState(40);
   const total = BASE_PRICE + strap.extra;
+
+  const handleAdd = () => {
+    onAdd(`Aster · ${dial.name}, ${strap.name}, ${size} mm`);
+  };
 
   return (
     <section className="ah-build ah-section" id="build">
@@ -330,11 +343,7 @@ function Configurator({ onAdd }) {
                 ₹{formatPrice(total)}
               </strong>
             </div>
-            <button
-              type="button"
-              className="ah-btn ah-btn--signal"
-              onClick={() => onAdd(`Aster · ${dial.name}, ${strap.name}, ${size} mm`)}
-            >
+            <button type="button" className="ah-btn ah-btn--signal" onClick={handleAdd}>
               Add build to cart
             </button>
           </div>
@@ -447,6 +456,37 @@ function Home1() {
   }, [filter, query]);
 
   const review = TESTIMONIALS[quote];
+
+  /* ---- navigation / card-click handlers, kept as plain named
+     functions so nothing inline-block-bodied sits inside JSX ---- */
+  const handleCardOpen = (id) => () => {
+    goToProductPage(id);
+  };
+
+  const handleCardKeyDown = (id) => (e) => {
+    if (e.key === 'Enter') {
+      goToProductPage(id);
+    }
+  };
+
+  const handleAddToCartClick = (name) => (e) => {
+    e.stopPropagation();
+    addToCart(name);
+  };
+
+  const handleWishlistClick = (id) => (e) => {
+    e.stopPropagation();
+    toggleWishlist(id);
+  };
+
+  const handleCategoryClick = () => {
+    const target = document.getElementById('featured');
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleCategoryKeyDown = (e) => {
+    if (e.key === 'Enter') handleCategoryClick();
+  };
 
   return (
     <div className="ah-root">
@@ -637,11 +677,14 @@ function Home1() {
 
             <div className={`ah-bento ${bentoIn ? 'is-in' : ''}`} ref={bentoRef}>
               {CATEGORIES.map((c, i) => (
-                <a
-                  href="#featured"
-                  className={`ah-tile ${c.lead ? 'ah-tile--lead' : ''}`}
-                  style={{ '--i': i }}
+                <div
                   key={c.name}
+                  className={`ah-tile ${c.lead ? 'ah-tile--lead' : ''}`}
+                  style={{ '--i': i, cursor: 'pointer' }}
+                  role="link"
+                  tabIndex={0}
+                  onClick={handleCategoryClick}
+                  onKeyDown={handleCategoryKeyDown}
                 >
                   <SmartImage className="ah-tile__img" src={img(c.image, c.lead ? 1000 : 700)} alt="" />
 
@@ -653,7 +696,7 @@ function Home1() {
                   <span className="ah-tile__go">
                     <Icon name="arrow" size={18} />
                   </span>
-                </a>
+                </div>
               ))}
             </div>
           </div>
@@ -700,7 +743,15 @@ function Home1() {
 
             <div className="ah-rail" ref={railRef}>
               {DEALS.map((deal) => (
-                <article className="ah-deal" key={deal.id}>
+                <article
+                  className="ah-deal"
+                  key={deal.id}
+                  role="link"
+                  tabIndex={0}
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleCardOpen(deal.id)}
+                  onKeyDown={handleCardKeyDown(deal.id)}
+                >
                   <div className="ah-deal__media">
                     <SmartImage className="ah-deal__img" src={img(deal.image, 700)} alt={deal.name} />
                     <span className="ah-deal__badge">{deal.discount}% off</span>
@@ -726,7 +777,7 @@ function Home1() {
                     <button
                       type="button"
                       className="ah-btn ah-btn--line ah-btn--sm ah-btn--block"
-                      onClick={() => addToCart(deal.name)}
+                      onClick={handleAddToCartClick(deal.name)}
                     >
                       Add to cart
                     </button>
@@ -780,14 +831,22 @@ function Home1() {
             ) : (
               <div className="ah-grid" key={`${filter}-${query}`}>
                 {visible.map((p, i) => (
-                  <article className="ah-card" style={{ '--i': i }} key={p.id}>
+                  <article
+                    className="ah-card"
+                    style={{ '--i': i, cursor: 'pointer' }}
+                    key={p.id}
+                    role="link"
+                    tabIndex={0}
+                    onClick={handleCardOpen(p.id)}
+                    onKeyDown={handleCardKeyDown(p.id)}
+                  >
                     <div className="ah-card__media">
                       <SmartImage className="ah-card__img" src={img(p.image, 700)} alt={p.name} />
 
                       <button
                         type="button"
                         className={`ah-wish ${wishlist[p.id] ? 'is-on' : ''}`}
-                        onClick={() => toggleWishlist(p.id)}
+                        onClick={handleWishlistClick(p.id)}
                         aria-pressed={!!wishlist[p.id]}
                         aria-label={`Save ${p.name} to wishlist`}
                       >
@@ -811,7 +870,7 @@ function Home1() {
                       <button
                         type="button"
                         className="ah-btn ah-btn--ink ah-btn--sm ah-btn--block"
-                        onClick={() => addToCart(p.name)}
+                        onClick={handleAddToCartClick(p.name)}
                       >
                         Add to cart
                       </button>

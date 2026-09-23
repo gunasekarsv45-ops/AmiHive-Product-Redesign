@@ -1925,4 +1925,10 @@
     opacity: 1;
     transform: none;
   }
+  .ah-tile {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  }
+  
 }
