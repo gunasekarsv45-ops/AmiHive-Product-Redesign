@@ -26,6 +26,7 @@ export const ICONS = {
   shield: 'M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3zM9 12l2 2 4-4',
   clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
   returns: 'M4 12a8 8 0 0 1 14-5l2 2M20 4v5h-5M20 12a8 8 0 0 1-14 5l-2-2M4 20v-5h5',
+  plus: 'M12 5v14M5 12h14',
 };
 
 const NAV = [
@@ -141,6 +142,38 @@ export const STRAPS = [
 ];
 
 export const SIZES = [38, 40, 42];
+
+/* ---- new content: press mentions, brand story stats, FAQ ---- */
+export const PRESS_MENTIONS = ['Vogue India', 'GQ', 'Rolling Stone', 'The Established', "Man's World"];
+
+export const STORY_STATS = [
+  { value: '2018', label: 'Founded' },
+  { value: '40k+', label: 'Watches shipped' },
+  { value: '4.7★', label: 'Average rating' },
+];
+
+export const FAQS = [
+  {
+    q: 'How accurate is the automatic movement?',
+    a: 'Our automatic movements are regulated to within -20/+40 seconds a day, in line with standard mechanical watch tolerances. No battery is needed — normal daily wear keeps it wound.',
+  },
+  {
+    q: 'Can I swim or shower with my watch on?',
+    a: 'Every watch is rated to at least 5 ATM, which covers rain, hand-washing and swimming. It is not built for diving or high-pressure water sports.',
+  },
+  {
+    q: 'What is covered under the 2-year warranty?',
+    a: 'The warranty covers manufacturing defects in the movement and case. It does not cover accidental damage, water damage from unrated use, or normal wear on straps.',
+  },
+  {
+    q: 'How long does shipping take?',
+    a: 'Orders ship within 2 business days and arrive in 3-6 days across India, fully insured at no extra cost.',
+  },
+  {
+    q: 'Can I return or exchange my order?',
+    a: 'Yes — you have 7 days from delivery to exchange or return your watch, no questions asked, as long as it is unworn and in its original packaging.',
+  },
+];
 
 /* ------------------------------------------------------------------
    HELPERS
@@ -372,6 +405,7 @@ function Home1() {
   const [quote, setQuote] = useState(0);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
 
   const railRef = useRef(null);
   const toastTimer = useRef(null);
@@ -487,6 +521,8 @@ function Home1() {
   const handleCategoryKeyDown = (e) => {
     if (e.key === 'Enter') handleCategoryClick();
   };
+
+  const toggleFaq = (i) => () => setOpenFaq((cur) => (cur === i ? null : i));
 
   return (
     <div className="ah-root">
@@ -664,6 +700,20 @@ function Home1() {
                 </span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ---------- press / as featured in ---------- */}
+        <section className="ah-press" aria-label="As featured in">
+          <div className="ah-wrap ah-press__row">
+            <span className="ah-press__label">As featured in</span>
+            <div className="ah-press__logos">
+              {PRESS_MENTIONS.map((name) => (
+                <span className="ah-press__logo" key={name}>
+                  {name}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -918,6 +968,77 @@ function Home1() {
 
                   <i className="ah-voice__bar" />
                 </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- our story ---------- */}
+        <section className="ah-section ah-story" id="story">
+          <div className="ah-wrap ah-story__grid">
+            <div className="ah-story__media">
+              <SmartImage className="ah-story__img" src={img('studio', 1000)} alt="Amihive watchmaking studio" />
+              <div className="ah-story__badge">
+                <strong>Since 2018</strong>
+                <span>Independent watchmaking</span>
+              </div>
+            </div>
+
+            <div className="ah-story__copy">
+              <h2>Built by people who wear what they make</h2>
+              <p>
+                Amihive started in a small workshop with one idea: a mechanical watch worth wearing every single
+                day, not saving for occasions. Every case is machined, assembled and tested by the same small team
+                before it ships.
+              </p>
+              <p>
+                We keep the lineup small on purpose, so every piece gets the attention it deserves, from the first
+                sketch to the watch on your wrist.
+              </p>
+
+              <div className="ah-story__stats">
+                {STORY_STATS.map((s) => (
+                  <div className="ah-story__stat" key={s.label}>
+                    <strong>{s.value}</strong>
+                    <span>{s.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <a className="ah-btn ah-btn--ink" href="#featured">
+                Shop the collection
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- faq ---------- */}
+        <section className="ah-section ah-faq" id="faq">
+          <div className="ah-wrap ah-faq__wrap">
+            <div className="ah-head">
+              <h2>Frequently asked questions</h2>
+              <p>Everything you need to know before your first Amihive watch arrives.</p>
+            </div>
+
+            <div className="ah-faq__list">
+              {FAQS.map((item, i) => (
+                <div className={`ah-faq__item ${openFaq === i ? 'is-open' : ''}`} key={item.q}>
+                  <button
+                    type="button"
+                    className="ah-faq__q"
+                    aria-expanded={openFaq === i}
+                    onClick={toggleFaq(i)}
+                  >
+                    {item.q}
+                    <span className="ah-faq__icon">
+                      <Icon name="plus" size={16} />
+                    </span>
+                  </button>
+
+                  <div className="ah-faq__a" style={{ maxHeight: openFaq === i ? '300px' : '0px' }}>
+                    <p>{item.a}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

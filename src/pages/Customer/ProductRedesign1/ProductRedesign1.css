@@ -273,6 +273,7 @@
 
 .pr-header__actions {
   display: flex;
+  align-items: center;
   gap: 2px;
 }
 
@@ -291,8 +292,11 @@
   background: var(--mist);
 }
 
+/* theme-matched: saved/active state uses the brand signal orange,
+   same accent Home1 uses for its own wishlist heart */
 .pr-iconbtn.is-on {
   color: var(--signal);
+  background: rgba(242, 84, 45, 0.1);
 }
 
 .pr-iconbtn.is-on svg,
@@ -554,9 +558,13 @@
   font-size: 15px;
 }
 
+/* price row: cancelled/original amount comes first (struck through),
+   then the real price, then the discount badge — align-items keeps
+   the mismatched font sizes sitting on the same baseline */
 .pr-info__price {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 16px;
 }
@@ -567,15 +575,18 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   display: inline-block;
+  order: 2;
   animation: pr-price-pop 0.4s var(--ease) both;
 }
 
 .pr-info__price s {
-  font-size: 15px;
+  order: 1;
+  font-size: 16px;
   color: #7d8a8e;
 }
 
 .pr-info__pct {
+  order: 3;
   font-size: 13.5px;
   font-weight: 700;
   color: var(--ok);
@@ -794,9 +805,22 @@
   font-size: 13.5px;
 }
 
-/* moving highlight sweep across the primary CTA on hover, plus a
-   playful icon lift so the button reads as clickable and alive */
-.pr-btn--signal {
+/* ------------------------------------------------------------------
+   IMPORTANT: every rule below that paints a button's background is
+   written as TWO classes (e.g. .pr-btn.pr-btn--signal) on purpose.
+   The base reset ".pr-root button { background: none; }" combines a
+   class + an element selector, which is MORE specific than a single
+   class like ".pr-btn--signal" alone — so a single-class background
+   rule was silently losing to the reset and the buttons rendered
+   with no fill. Two classes together outrank the reset reliably.
+   ------------------------------------------------------------------- */
+
+/* primary CTA — solid signal orange at rest (not just on hover),
+   with the shimmer sweep and icon lift as an extra hover flourish.
+   Fixed min-width so it doesn't jump in size when the label changes. */
+.pr-btn.pr-btn--signal {
+  min-width: 190px;
+  background-color: var(--signal);
   background-image: linear-gradient(
     100deg,
     var(--signal) 0%,
@@ -808,41 +832,61 @@
   background-size: 260% 100%;
   background-position: 0% 0%;
   color: #fff;
+  box-shadow: 0 8px 20px -12px rgba(242, 84, 45, 0.6);
 }
 
-.pr-btn--signal:hover:not(:disabled) {
+.pr-btn.pr-btn--signal:hover:not(:disabled) {
   background-position: 100% 0%;
-  box-shadow: 0 12px 26px -12px rgba(242, 84, 45, 0.55);
+  box-shadow: 0 12px 26px -12px rgba(242, 84, 45, 0.65);
 }
 
-.pr-btn--signal:hover:not(:disabled) svg {
+.pr-btn.pr-btn--signal:hover:not(:disabled) svg {
   transform: translateY(-2px) scale(1.1);
 }
 
-.pr-btn--line {
-  border: 1.5px solid var(--ink);
+/* Save / wishlist button — now a signal-orange outline pill, same
+   height (46px) as Add to Cart and given its own min-width so the
+   two sit together as one coordinated, matching-size button pair
+   instead of one wide pill next to one tiny/odd-coloured one */
+.pr-btn.pr-btn--line {
+  min-width: 130px;
+  background-color: #fff;
+  border: 1.5px solid var(--signal);
+  color: var(--signal);
+  box-shadow: none;
 }
 
-.pr-btn--line:hover,
-.pr-btn--line.is-on {
-  background: var(--ink);
+.pr-btn.pr-btn--line:hover:not(:disabled) {
+  background-color: var(--signal);
+  border-color: var(--signal);
   color: #fff;
+}
+
+.pr-btn.pr-btn--line.is-on {
+  background-color: var(--signal);
+  border-color: var(--signal);
+  color: #fff;
+}
+
+.pr-btn.pr-btn--line.is-on:hover:not(:disabled) {
+  background-color: var(--signal-dark);
+  border-color: var(--signal-dark);
 }
 
 .pr-wishbtn.is-on {
   animation: pr-added-bounce 0.4s var(--ease);
 }
 
-/* dark "ink" add-to-cart button — shimmer sweep + icon bounce,
-   mirrors Home1's .ah-btn--ink with extra motion for the card CTA */
-.pr-btn--ink {
+/* related-card add-to-cart button — solid petrol, shimmer sweep +
+   icon bounce on hover, theme-matched instead of plain black/white */
+.pr-btn.pr-btn--ink {
   position: relative;
   overflow: hidden;
-  background: var(--ink);
+  background-color: var(--petrol);
   color: #fff;
 }
 
-.pr-btn--ink::before {
+.pr-btn.pr-btn--ink::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -852,23 +896,24 @@
   pointer-events: none;
 }
 
-.pr-btn--ink:hover:not(:disabled)::before {
+.pr-btn.pr-btn--ink:hover:not(:disabled)::before {
   transform: translateX(120%);
 }
 
-.pr-btn--ink:hover:not(:disabled) {
-  background: var(--petrol-2);
+.pr-btn.pr-btn--ink:hover:not(:disabled) {
+  background-color: var(--petrol-2);
 }
 
-.pr-btn--ink:hover:not(:disabled) svg {
+.pr-btn.pr-btn--ink:hover:not(:disabled) svg {
   transform: translateY(-2px) rotate(-8deg);
 }
 
-/* success morph state, shared by any pr-btn: flashes green and
-   bounces once when the item has just been added */
+/* success morph state, shared by any pr-btn: flashes a confirming
+   green and bounces once right after the item is added */
 .pr-btn.is-added {
-  background: var(--ok) !important;
-  background-image: none !important;
+  background-color: var(--ok);
+  background-image: none;
+  border-color: var(--ok);
   animation: pr-added-bounce 0.45s var(--ease);
 }
 
@@ -913,14 +958,15 @@
   height: 38px;
   padding: 0 16px;
   border-radius: 8px;
-  background: var(--ink);
+  background-color: var(--petrol);
   color: #fff;
   font-size: 13.5px;
   font-weight: 600;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .pr-delivery__row button:hover:not(:disabled) {
+  background-color: var(--petrol-2);
   transform: translateY(-1px);
 }
 
@@ -1581,8 +1627,9 @@
   transform: scale(1.06);
 }
 
-/* wishlist heart overlay on the related-product image,
-   copied from Home1's .ah-wish, with an idle glow ring while saved */
+/* wishlist heart overlay on the related-product image — theme's
+   signal orange when saved, matching Home1's own wishlist heart,
+   with an idle glow ring while saved */
 .pr-wish {
   position: absolute;
   top: 12px;
@@ -1654,21 +1701,26 @@
   margin-top: 12px;
 }
 
+/* card price row: cancelled amount first, real price second,
+   same baseline alignment as the main buy box */
 .pr-price {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 4px;
 }
 
 .pr-price strong {
+  order: 2;
   font-family: var(--font-display);
   font-size: 16.5px;
   font-weight: 700;
 }
 
 .pr-price s {
-  font-size: 12px;
+  order: 1;
+  font-size: 12.5px;
   color: #7d8a8e;
 }
 
@@ -1868,7 +1920,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--petrol);
   color: #fff;
   box-shadow: 0 14px 28px -14px rgba(0, 0, 0, 0.5);
   opacity: 0;
@@ -1962,6 +2014,11 @@
   .pr-buy .pr-btn,
   .pr-buy .pr-qty {
     width: 100%;
+  }
+
+  .pr-btn.pr-btn--signal,
+  .pr-btn.pr-btn--line {
+    min-width: 0;
   }
 
   .pr-specgrid__grid {

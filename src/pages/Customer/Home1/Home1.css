@@ -210,13 +210,19 @@
   background: var(--petrol-2);
 }
 
+/* CHANGED: was an outline-only button (transparent bg + dark border),
+   which is why it looked different from .ah-btn--ink. Now uses the exact
+   same fill/hover colors as .ah-btn--ink, so every "Add to cart" button
+   on the page renders identically regardless of which class is used. */
 .ah-btn--line {
+  background: var(--ink);
+  color: #fff;
   border: 1.5px solid var(--ink);
 }
 
 .ah-btn--line:hover {
-  background: var(--ink);
-  color: #fff;
+  background: var(--petrol-2);
+  border-color: var(--petrol-2);
 }
 
 .ah-round {
@@ -771,6 +777,54 @@
   font-style: normal;
   font-size: 13px;
   color: var(--muted);
+}
+
+/* ==================================================================
+   PRESS / AS FEATURED IN
+   ================================================================== */
+.ah-press {
+  padding-block: clamp(28px, 4vw, 44px);
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.ah-press__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px 40px;
+}
+
+.ah-press__label {
+  flex: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ah-press__logos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(20px, 4vw, 48px);
+  flex: 1;
+}
+
+.ah-press__logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(15px, 1.6vw, 19px);
+  letter-spacing: -0.01em;
+  color: #b7c3c5;
+  white-space: nowrap;
+  transition: color 0.25s ease;
+}
+
+.ah-press__logo:hover {
+  color: var(--petrol);
 }
 
 /* ==================================================================
@@ -1463,6 +1517,178 @@
 }
 
 /* ==================================================================
+   OUR STORY
+   ================================================================== */
+.ah-story {
+  background: #fff;
+}
+
+.ah-story__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 80px);
+}
+
+.ah-story__media {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3.4;
+}
+
+.ah-story__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease);
+}
+
+.ah-story__media:hover .ah-story__img {
+  transform: scale(1.05);
+}
+
+.ah-story__badge {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 16px 32px -18px rgba(11, 58, 64, 0.4);
+}
+
+.ah-story__badge strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--petrol);
+}
+
+.ah-story__badge span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ah-story__copy h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.ah-story__copy p {
+  margin-top: 14px;
+  max-width: 56ch;
+  color: var(--muted);
+  font-size: 15.5px;
+  line-height: 1.75;
+}
+
+.ah-story__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.ah-story__stat strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.ah-story__stat span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.ah-story__copy .ah-btn {
+  margin-top: 28px;
+}
+
+/* ==================================================================
+   FAQ
+   ================================================================== */
+.ah-faq {
+  background: var(--paper);
+}
+
+.ah-faq__wrap {
+  max-width: 880px;
+}
+
+.ah-faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ah-faq__item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.25s ease;
+}
+
+.ah-faq__item.is-open {
+  border-color: var(--petrol-2);
+}
+
+.ah-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ah-faq__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--mist);
+  color: var(--petrol);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.3s var(--ease);
+}
+
+.ah-faq__item.is-open .ah-faq__icon {
+  background: var(--signal);
+  color: #fff;
+  transform: rotate(45deg);
+}
+
+.ah-faq__a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s var(--ease);
+}
+
+.ah-faq__a p {
+  padding: 0 20px 20px;
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* ==================================================================
    NEWSLETTER
    ================================================================== */
 .ah-news {
@@ -1734,13 +1960,18 @@
   }
 
   .ah-build__grid,
-  .ah-voices__grid {
+  .ah-voices__grid,
+  .ah-story__grid {
     grid-template-columns: 1fr;
   }
 
   .ah-build__stage {
     aspect-ratio: 4 / 3.6;
     max-height: 520px;
+  }
+
+  .ah-story__media {
+    aspect-ratio: 4 / 2.8;
   }
 }
 
@@ -1864,6 +2095,29 @@
     width: 100%;
   }
 
+  .ah-press__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .ah-press__logos {
+    gap: 20px;
+  }
+
+  .ah-story__stats {
+    gap: 10px;
+  }
+
+  .ah-faq__q {
+    padding: 15px 16px;
+    font-size: 14px;
+  }
+
+  .ah-faq__a p {
+    padding: 0 16px 16px;
+  }
+
   .ah-news__form {
     flex-basis: 100%;
     max-width: none;
@@ -1900,6 +2154,15 @@
   .ah-clock b {
     min-width: 40px;
     font-size: 18px;
+  }
+
+  .ah-story__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ah-story__stat strong {
+    font-size: 19px;
   }
 }
 
