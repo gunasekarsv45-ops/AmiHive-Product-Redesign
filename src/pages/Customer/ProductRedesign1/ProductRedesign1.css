@@ -187,6 +187,34 @@
   }
 }
 
+/* ---- shared "Added" success bounce for any pr-btn ---- */
+@keyframes pr-added-bounce {
+  0% {
+    transform: scale(0.94);
+  }
+  55% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---- expanding glow ring used behind saved wishlist hearts ---- */
+@keyframes pr-wish-ring {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* ==================================================================
    HEADER + BREADCRUMB
    ================================================================== */
@@ -249,6 +277,7 @@
 }
 
 .pr-iconbtn {
+  position: relative;
   display: grid;
   place-items: center;
   width: 42px;
@@ -270,6 +299,21 @@
 .pr-wishbtn.is-on svg {
   animation: pr-heart-pop 0.4s var(--ease);
   fill: currentColor;
+}
+
+/* glowing ring pulses gently behind the header heart while saved */
+.pr-iconbtn::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--signal);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pr-iconbtn.is-on::after {
+  animation: pr-wish-ring 1.7s ease-out infinite;
 }
 
 .pr-crumb {
@@ -730,6 +774,10 @@
     transform 0.25s var(--ease), opacity 0.2s ease, box-shadow 0.3s ease;
 }
 
+.pr-btn svg {
+  transition: transform 0.3s var(--ease);
+}
+
 .pr-btn:active {
   transform: scale(0.97);
 }
@@ -746,7 +794,8 @@
   font-size: 13.5px;
 }
 
-/* moving highlight sweep across the primary CTA on hover */
+/* moving highlight sweep across the primary CTA on hover, plus a
+   playful icon lift so the button reads as clickable and alive */
 .pr-btn--signal {
   background-image: linear-gradient(
     100deg,
@@ -766,6 +815,10 @@
   box-shadow: 0 12px 26px -12px rgba(242, 84, 45, 0.55);
 }
 
+.pr-btn--signal:hover:not(:disabled) svg {
+  transform: translateY(-2px) scale(1.1);
+}
+
 .pr-btn--line {
   border: 1.5px solid var(--ink);
 }
@@ -774,6 +827,54 @@
 .pr-btn--line.is-on {
   background: var(--ink);
   color: #fff;
+}
+
+.pr-wishbtn.is-on {
+  animation: pr-added-bounce 0.4s var(--ease);
+}
+
+/* dark "ink" add-to-cart button — shimmer sweep + icon bounce,
+   mirrors Home1's .ah-btn--ink with extra motion for the card CTA */
+.pr-btn--ink {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+  color: #fff;
+}
+
+.pr-btn--ink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 20%, rgba(255, 255, 255, 0.3) 50%, transparent 80%);
+  transform: translateX(-120%);
+  transition: transform 0.6s var(--ease);
+  pointer-events: none;
+}
+
+.pr-btn--ink:hover:not(:disabled)::before {
+  transform: translateX(120%);
+}
+
+.pr-btn--ink:hover:not(:disabled) {
+  background: var(--petrol-2);
+}
+
+.pr-btn--ink:hover:not(:disabled) svg {
+  transform: translateY(-2px) rotate(-8deg);
+}
+
+/* success morph state, shared by any pr-btn: flashes green and
+   bounces once when the item has just been added */
+.pr-btn.is-added {
+  background: var(--ok) !important;
+  background-image: none !important;
+  animation: pr-added-bounce 0.45s var(--ease);
+}
+
+/* full-width variant — mirrors Home1's .ah-btn--block */
+.pr-btn--block {
+  width: 100%;
 }
 
 /* ---- delivery check ---- */
@@ -1463,6 +1564,7 @@
 }
 
 .pr-card__media {
+  position: relative;
   aspect-ratio: 4 / 4.6;
   background: var(--mist);
   overflow: hidden;
@@ -1479,9 +1581,54 @@
   transform: scale(1.06);
 }
 
+/* wishlist heart overlay on the related-product image,
+   copied from Home1's .ah-wish, with an idle glow ring while saved */
+.pr-wish {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  transition: color 0.2s ease, transform 0.3s var(--ease);
+}
+
+.pr-wish::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--signal);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pr-wish:hover {
+  transform: scale(1.08);
+}
+
+.pr-wish.is-on {
+  color: var(--signal);
+  animation: pr-heart-pop 0.4s var(--ease);
+}
+
+.pr-wish.is-on svg {
+  fill: currentColor;
+}
+
+.pr-wish.is-on::after {
+  animation: pr-wish-ring 1.7s ease-out infinite;
+}
+
 .pr-card__body {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 4px;
   padding: 14px;
 }
@@ -1495,6 +1642,16 @@
 .pr-card__body > span {
   font-size: 12px;
   color: var(--muted);
+}
+
+/* pushes the Add to cart button to the bottom of the card,
+   mirrors Home1's .ah-card__body .ah-btn */
+.pr-card__body .pr-btn {
+  margin-top: auto;
+}
+
+.pr-card__body .pr-price + .pr-btn {
+  margin-top: 12px;
 }
 
 .pr-price {

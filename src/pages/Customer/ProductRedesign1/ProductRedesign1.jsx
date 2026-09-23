@@ -208,7 +208,12 @@ function ProductRedesign1({ productId }) {
   const [fbtSelected, setFbtSelected] = useState({ 0: true, 1: true, 2: true });
   const [miniVisible, setMiniVisible] = useState(false);
   const [showTop, setShowTop] = useState(false);
+  const [cardWish, setCardWish] = useState({});
+  const [addedMain, setAddedMain] = useState(false);
+  const [cardAdded, setCardAdded] = useState({});
   const toastTimer = useRef(null);
+  const addedMainTimer = useRef(null);
+  const cardAddedTimers = useRef({});
   const buyRef = useRef(null);
 
   /* reveal-on-scroll for the content sections below the fold */
@@ -235,10 +240,21 @@ function ProductRedesign1({ productId }) {
     setPincode('');
     setDeliveryChecked(false);
     setFbtSelected({ 0: true, 1: true, 2: true });
+    setAddedMain(false);
+    setCardAdded({});
+    Object.values(cardAddedTimers.current).forEach(clearTimeout);
+    cardAddedTimers.current = {};
     window.scrollTo(0, 0);
   }, [productId]);
 
-  useEffect(() => () => clearTimeout(toastTimer.current), []);
+  useEffect(
+    () => () => {
+      clearTimeout(toastTimer.current);
+      clearTimeout(addedMainTimer.current);
+      Object.values(cardAddedTimers.current).forEach(clearTimeout);
+    },
+    []
+  );
 
   /* sticky mini buy bar: shows once the main buy box scrolls out of view */
   useEffect(() => {
@@ -303,7 +319,15 @@ function ProductRedesign1({ productId }) {
     toastTimer.current = setTimeout(() => setToast(''), 2600);
   };
 
-  const addToCart = () => showToast(`Added "${product.name}" (x${qty}) to your cart.`);
+  /* main buy-box Add to cart — briefly morphs into a green
+     "Added to cart" state for tactile confirmation */
+  const addToCart = () => {
+    showToast(`Added "${product.name}" (x${qty}) to your cart.`);
+    setAddedMain(true);
+    clearTimeout(addedMainTimer.current);
+    addedMainTimer.current = setTimeout(() => setAddedMain(false), 1400);
+  };
+
   const addFbtToCart = () => showToast(`Added ${fbtCount} item${fbtCount === 1 ? '' : 's'} to your cart.`);
 
   const handlePrevShot = () => {
@@ -345,6 +369,24 @@ function ProductRedesign1({ productId }) {
   const handleWishToggle = () => setWish((w) => !w);
   const handleSizePick = (s) => () => setSize(s);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  /* related-product card handlers: wishlist heart + add-to-cart,
+     matching Home1's ah-wish / ah-btn--ink behaviour, with the same
+     "Added" morph feedback as the main buy box */
+  const handleCardWishClick = (id) => (e) => {
+    e.stopPropagation();
+    setCardWish((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleRelatedAddToCart = (p) => (e) => {
+    e.stopPropagation();
+    showToast(`Added "${p.name}" to your cart.`);
+    setCardAdded((prev) => ({ ...prev, [p.id]: true }));
+    clearTimeout(cardAddedTimers.current[p.id]);
+    cardAddedTimers.current[p.id] = setTimeout(() => {
+      setCardAdded((prev) => ({ ...prev, [p.id]: false }));
+    }, 1400);
+  };
 
   const categoryLabel = product.type === 'strap' ? 'Straps' : product.type === 'accessory' ? 'Accessories' : 'Watches';
 
@@ -535,8 +577,18 @@ function ProductRedesign1({ productId }) {
                 </button>
               </div>
 
-              <button type="button" className="pr-btn pr-btn--signal" onClick={addToCart}>
-                Add to cart — ₹{formatPrice(total)}
+              <button
+                type="button"
+                className={`pr-btn pr-btn--signal ${addedMain ? 'is-added' : ''}`}
+                onClick={addToCart}
+              >
+                {addedMain ? (
+                  <>
+                    <Icon name="check" size={18} /> Added to cart
+                  </>
+                ) : (
+                  <>Add to cart — ₹{formatPrice(total)}</>
+                )}
               </button>
 
               <button
@@ -816,6 +868,15 @@ function ProductRedesign1({ productId }) {
               >
                 <div className="pr-card__media">
                   <SmartImage className="pr-card__img" src={img(p.image, 700)} alt={p.name} />
+                  <button
+                    type="button"
+                    className={`pr-wish ${cardWish[p.id] ? 'is-on' : ''}`}
+                    onClick={handleCardWishClick(p.id)}
+                    aria-pressed={!!cardWish[p.id]}
+                    aria-label={`Save ${p.name} to wishlist`}
+                  >
+                    <Icon name="heart" size={18} />
+                  </button>
                 </div>
                 <div className="pr-card__body">
                   <strong>{p.name}</strong>
@@ -824,6 +885,21 @@ function ProductRedesign1({ productId }) {
                     <strong>₹{formatPrice(p.price)}</strong>
                     {p.originalPrice > 0 && <s>₹{formatPrice(p.originalPrice)}</s>}
                   </div>
+                  <button
+                    type="button"
+                    className={`pr-btn pr-btn--ink pr-btn--sm pr-btn--block ${cardAdded[p.id] ? 'is-added' : ''}`}
+                    onClick={handleRelatedAddToCart(p)}
+                  >
+                    {cardAdded[p.id] ? (
+                      <>
+                        <Icon name="check" size={16} /> Added
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="bag" size={15} /> Add to cart
+                      </>
+                    )}
+                  </button>
                 </div>
               </article>
             ))}
@@ -881,7 +957,7 @@ function ProductRedesign1({ productId }) {
             </div>
           </div>
           <button type="button" className="pr-btn pr-btn--signal pr-btn--sm" onClick={addToCart}>
-            Add to cart
+            <Icon name="bag" size={16} /> Add to cart
           </button>
         </div>
       </div>
