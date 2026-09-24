@@ -522,6 +522,8 @@ function Home1() {
     if (e.key === 'Enter') handleCategoryClick();
   };
 
+  const handleProfileClick = () => showToast('Profile page coming soon.');
+
   const toggleFaq = (i) => () => setOpenFaq((cur) => (cur === i ? null : i));
 
   return (
@@ -584,10 +586,6 @@ function Home1() {
               )}
             </button>
 
-            <button type="button" className="ah-iconbtn ah-iconbtn--account" aria-label="Account">
-              <Icon name="user" />
-            </button>
-
             <button type="button" className="ah-iconbtn" aria-label={`Cart, ${cartCount} items`}>
               <Icon name="bag" />
               {cartCount > 0 && (
@@ -595,6 +593,15 @@ function Home1() {
                   {cartCount}
                 </span>
               )}
+            </button>
+
+            <button
+              type="button"
+              className="ah-iconbtn ah-iconbtn--account"
+              aria-label="Profile"
+              onClick={handleProfileClick}
+            >
+              <Icon name="user" />
             </button>
           </div>
         </div>

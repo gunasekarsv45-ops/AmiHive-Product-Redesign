@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Home1 from './pages/Customer/Home1/Home1';
 import ProductRedesign1 from './pages/Customer/ProductRedesign1/ProductRedesign1';
+import Categories from './pages/Customer/Categories/Categories';
+import Account from './pages/Customer/Account/Account';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -46,23 +48,26 @@ class ErrorBoundary extends React.Component {
 }
 
 function getRoute() {
-  const path =
-    window.location.pathname.replace(/\/+$/, '') || '/';
-
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
   const params = new URLSearchParams(window.location.search);
-  const productId = params.get('id');
 
   if (path === '/product') {
     return {
       page: 'product',
-      productId,
+      productId: params.get('id'),
+      search: window.location.search,
     };
   }
 
-  return {
-    page: 'home',
-    productId: null,
-  };
+  if (path === '/categories') {
+    return { page: 'categories', productId: null, search: window.location.search };
+  }
+
+  if (path === '/account') {
+    return { page: 'account', productId: null, search: window.location.search };
+  }
+
+  return { page: 'home', productId: null, search: '' };
 }
 
 function App() {
@@ -88,11 +93,14 @@ function App() {
   return (
     <ErrorBoundary>
       {route.page === 'product' && (
-        <ProductRedesign1
-          productId={route.productId}
-          onBack={goHome}
-        />
+        <ProductRedesign1 productId={route.productId} onBack={goHome} />
       )}
+
+      {/* key={route.search} so ?cat=strap or ?tab=orders re-reads the URL
+          when you move between links on the same page */}
+      {route.page === 'categories' && <Categories key={route.search} />}
+
+      {route.page === 'account' && <Account key={route.search} />}
 
       {route.page === 'home' && <Home1 />}
     </ErrorBoundary>

@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap');
 
 /* ==================================================================
-   TOKENS — same palette/type/rhythm as Home1's .ah-root
+   TOKENS
    ================================================================== */
 .pr-root {
   --ink: #0f1a1d;
@@ -20,7 +20,8 @@
   --font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
   --font-body: 'Instrument Sans', system-ui, sans-serif;
 
-  --gutter: clamp(16px, 4vw, 40px);
+  /* smaller side gutter + wider container = less blank space */
+  --gutter: clamp(12px, 2vw, 24px);
   --section-y: clamp(36px, 5vw, 60px);
   --head-mb: clamp(20px, 3vw, 32px);
   --gap-card: 20px;
@@ -33,6 +34,7 @@
   font-size: 16px;
   line-height: 1.5;
   min-height: 100vh;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -44,11 +46,17 @@
 
 .pr-root h1,
 .pr-root h2,
+.pr-root h4,
 .pr-root p,
 .pr-root fieldset,
-.pr-root ul {
+.pr-root ul,
+.pr-root address {
   margin: 0;
   padding: 0;
+}
+
+.pr-root address {
+  font-style: normal;
 }
 
 .pr-root fieldset {
@@ -85,7 +93,7 @@
 
 .pr-wrap {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1560px;
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -103,7 +111,6 @@
   letter-spacing: -0.02em;
 }
 
-/* animated accent line that draws in once the section scrolls into view */
 .pr-section-title::after {
   content: '';
   position: absolute;
@@ -122,8 +129,6 @@
   transform: scaleX(1);
 }
 
-/* every content section shares one border-top rhythm — no gaps,
-   no double-padding between sections */
 .pr-offers,
 .pr-highlights,
 .pr-about,
@@ -140,7 +145,7 @@
 }
 
 /* ==================================================================
-   SCROLL REVEAL
+   SCROLL REVEAL + KEYFRAMES
    ================================================================== */
 .pr-reveal {
   opacity: 0;
@@ -187,7 +192,6 @@
   }
 }
 
-/* ---- shared "Added" success bounce for any pr-btn ---- */
 @keyframes pr-added-bounce {
   0% {
     transform: scale(0.94);
@@ -200,7 +204,6 @@
   }
 }
 
-/* ---- expanding glow ring used behind saved wishlist hearts ---- */
 @keyframes pr-wish-ring {
   0% {
     transform: scale(0.7);
@@ -216,7 +219,7 @@
 }
 
 /* ==================================================================
-   HEADER + BREADCRUMB
+   HEADER + MENU + BREADCRUMB
    ================================================================== */
 .pr-header {
   position: sticky;
@@ -229,26 +232,25 @@
 }
 
 .pr-header__row {
-  display: flex;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   height: 68px;
 }
 
-.pr-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14.5px;
-  font-weight: 500;
-  color: var(--petrol);
-  transition: color 0.2s ease, transform 0.2s ease;
+.pr-header__left {
+  justify-self: start;
+  margin-left: -8px;
 }
 
-.pr-back:hover {
-  color: var(--signal);
-  transform: translateX(-2px);
+.pr-header__actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .pr-logo {
@@ -271,12 +273,6 @@
   background: var(--signal);
 }
 
-.pr-header__actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
 .pr-iconbtn {
   position: relative;
   display: grid;
@@ -292,8 +288,6 @@
   background: var(--mist);
 }
 
-/* theme-matched: saved/active state uses the brand signal orange,
-   same accent Home1 uses for its own wishlist heart */
 .pr-iconbtn.is-on {
   color: var(--signal);
   background: rgba(242, 84, 45, 0.1);
@@ -305,7 +299,6 @@
   fill: currentColor;
 }
 
-/* glowing ring pulses gently behind the header heart while saved */
 .pr-iconbtn::after {
   content: '';
   position: absolute;
@@ -318,6 +311,50 @@
 
 .pr-iconbtn.is-on::after {
   animation: pr-wish-ring 1.7s ease-out infinite;
+}
+
+/* dropdown menu behind the 3-line button */
+.pr-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(15, 26, 29, 0.25);
+}
+
+.pr-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 24px 40px -24px rgba(11, 58, 64, 0.5);
+  animation: pr-pop 0.3s var(--ease) both;
+}
+
+.pr-menu__inner {
+  display: flex;
+  flex-direction: column;
+  padding-block: 6px 12px;
+}
+
+.pr-menu__link {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 15.5px;
+  font-weight: 500;
+  transition: color 0.2s ease, padding-left 0.25s var(--ease);
+}
+
+.pr-menu__link:last-child {
+  border-bottom: 0;
+}
+
+.pr-menu__link:hover {
+  color: var(--signal);
+  padding-left: 6px;
 }
 
 .pr-crumb {
@@ -359,8 +396,6 @@
   align-self: start;
 }
 
-/* fixed, generous height so the carousel always reads as a full,
-   deliberate visual instead of a thin cropped strip */
 .pr-carousel {
   --zx: 50%;
   --zy: 50%;
@@ -558,9 +593,6 @@
   font-size: 15px;
 }
 
-/* price row: cancelled/original amount comes first (struck through),
-   then the real price, then the discount badge — align-items keeps
-   the mismatched font sizes sitting on the same baseline */
 .pr-info__price {
   display: flex;
   align-items: baseline;
@@ -650,7 +682,6 @@
   box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--petrol);
 }
 
-/* ---- strap picker: real photo swatches instead of a plain pill ---- */
 .pr-opt__row--strap {
   gap: 12px;
 }
@@ -770,6 +801,9 @@
   animation: pr-price-pop 0.3s var(--ease) both;
 }
 
+/* ---- buttons ----
+   Background rules use TWO classes so they beat the
+   ".pr-root button { background: none }" reset. */
 .pr-btn {
   display: inline-flex;
   align-items: center;
@@ -781,8 +815,8 @@
   font-size: 14.5px;
   font-weight: 600;
   white-space: nowrap;
-  transition: background-position 0.6s ease, background 0.25s ease, color 0.25s ease, border-color 0.25s ease,
-    transform 0.25s var(--ease), opacity 0.2s ease, box-shadow 0.3s ease;
+  transition: background-position 0.6s ease, background 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease, transform 0.25s var(--ease), opacity 0.2s ease, box-shadow 0.3s ease;
 }
 
 .pr-btn svg {
@@ -799,25 +833,17 @@
   transform: none;
 }
 
+/* one shared size for every "Add to cart" inside cards */
 .pr-btn--sm {
-  height: 40px;
+  height: 42px;
   padding: 0 18px;
-  font-size: 13.5px;
+  font-size: 14px;
 }
 
-/* ------------------------------------------------------------------
-   IMPORTANT: every rule below that paints a button's background is
-   written as TWO classes (e.g. .pr-btn.pr-btn--signal) on purpose.
-   The base reset ".pr-root button { background: none; }" combines a
-   class + an element selector, which is MORE specific than a single
-   class like ".pr-btn--signal" alone — so a single-class background
-   rule was silently losing to the reset and the buttons rendered
-   with no fill. Two classes together outrank the reset reliably.
-   ------------------------------------------------------------------- */
+.pr-btn--block {
+  width: 100%;
+}
 
-/* primary CTA — solid signal orange at rest (not just on hover),
-   with the shimmer sweep and icon lift as an extra hover flourish.
-   Fixed min-width so it doesn't jump in size when the label changes. */
 .pr-btn.pr-btn--signal {
   min-width: 190px;
   background-color: var(--signal);
@@ -844,10 +870,6 @@
   transform: translateY(-2px) scale(1.1);
 }
 
-/* Save / wishlist button — now a signal-orange outline pill, same
-   height (46px) as Add to Cart and given its own min-width so the
-   two sit together as one coordinated, matching-size button pair
-   instead of one wide pill next to one tiny/odd-coloured one */
 .pr-btn.pr-btn--line {
   min-width: 130px;
   background-color: #fff;
@@ -877,8 +899,6 @@
   animation: pr-added-bounce 0.4s var(--ease);
 }
 
-/* related-card add-to-cart button — solid petrol, shimmer sweep +
-   icon bounce on hover, theme-matched instead of plain black/white */
 .pr-btn.pr-btn--ink {
   position: relative;
   overflow: hidden;
@@ -908,18 +928,12 @@
   transform: translateY(-2px) rotate(-8deg);
 }
 
-/* success morph state, shared by any pr-btn: flashes a confirming
-   green and bounces once right after the item is added */
 .pr-btn.is-added {
   background-color: var(--ok);
   background-image: none;
   border-color: var(--ok);
+  color: #fff;
   animation: pr-added-bounce 0.45s var(--ease);
-}
-
-/* full-width variant — mirrors Home1's .ah-btn--block */
-.pr-btn--block {
-  width: 100%;
 }
 
 /* ---- delivery check ---- */
@@ -1109,7 +1123,7 @@
 }
 
 /* ==================================================================
-   ABOUT / DESCRIPTION
+   ABOUT
    ================================================================== */
 .pr-about__grid {
   display: grid;
@@ -1142,6 +1156,29 @@
   color: var(--muted);
   font-size: 15px;
   line-height: 1.75;
+}
+
+.pr-about__facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 60ch;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.pr-about__facts strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  color: var(--petrol);
+}
+
+.pr-about__facts span {
+  font-size: 12.5px;
+  color: var(--muted);
 }
 
 /* ==================================================================
@@ -1202,7 +1239,7 @@
 }
 
 /* ==================================================================
-   MATERIALS & CRAFTSMANSHIP
+   MATERIALS
    ================================================================== */
 .pr-materials__grid {
   display: grid;
@@ -1257,7 +1294,7 @@
 }
 
 /* ==================================================================
-   SIZE & FIT GUIDE
+   SIZE GUIDE
    ================================================================== */
 .pr-sizeguide__grid {
   display: grid;
@@ -1307,13 +1344,13 @@
 }
 
 /* ==================================================================
-   CARE INSTRUCTIONS
+   CARE
    ================================================================== */
 .pr-care__list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px 24px;
-  max-width: 74ch;
+  max-width: 90ch;
 }
 
 .pr-care__list li {
@@ -1335,31 +1372,42 @@
    ================================================================== */
 .pr-reviews-wrap {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
   gap: clamp(24px, 4vw, 48px);
+  align-items: start;
 }
 
 .pr-rating-summary {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  align-items: stretch;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
 }
 
 .pr-rating-summary__score {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
 }
 
 .pr-rating-summary__score strong {
   font-family: var(--font-display);
-  font-size: 44px;
+  font-size: 52px;
   font-weight: 800;
   color: var(--ink);
   line-height: 1;
 }
 
-.pr-rating-summary__score span {
+.pr-rating-summary__score .ah-stars {
+  font-size: 18px;
+}
+
+.pr-rating-summary__note {
   font-size: 13px;
   color: var(--muted);
 }
@@ -1367,41 +1415,53 @@
 .pr-rating-bars {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .pr-rating-bar {
   display: grid;
-  grid-template-columns: 30px 1fr 34px;
+  grid-template-columns: 34px 1fr 40px;
   align-items: center;
-  gap: 10px;
-  font-size: 12.5px;
+  gap: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
+.pr-rating-bar em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: right;
+}
+
 .pr-rating-bar__track {
-  height: 7px;
+  height: 8px;
   border-radius: 999px;
   background: var(--mist);
   overflow: hidden;
 }
 
 .pr-rating-bar__fill {
+  display: block;
   height: 100%;
   width: 0%;
   border-radius: 999px;
-  background: var(--star);
+  background: linear-gradient(90deg, var(--star), #f3b649);
   transition: width 1s var(--ease);
+}
+
+.pr-rating-summary__btn {
+  align-self: stretch;
 }
 
 .pr-reviews {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .pr-review {
-  padding: 16px 18px;
+  padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: #fff;
@@ -1423,36 +1483,37 @@
 .pr-review__avatar {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--petrol);
   color: #fff;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
   flex: none;
 }
 
 .pr-review__who {
   flex: 1;
+  min-width: 0;
 }
 
 .pr-review__who strong {
   display: block;
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--ink);
 }
 
 .pr-review__who em {
   font-style: normal;
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--muted);
 }
 
 .pr-review p {
   color: var(--ink);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 14.5px;
+  line-height: 1.65;
 }
 
 /* ==================================================================
@@ -1461,34 +1522,54 @@
 .pr-qna__list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-width: 74ch;
+  gap: 12px;
+  max-width: 90ch;
 }
 
 .pr-qna__item {
-  padding: 14px 18px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #fff;
-  transition: border-color 0.25s ease, transform 0.3s var(--ease);
+  transition: border-color 0.25s ease;
 }
 
-.pr-qna__item:hover {
+.pr-qna__item:hover,
+.pr-qna__item[open] {
   border-color: var(--petrol-2);
-  transform: translateX(3px);
 }
 
 .pr-qna__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 14.5px;
   font-weight: 600;
   color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.pr-qna__q::-webkit-details-marker {
+  display: none;
+}
+
+.pr-qna__q svg {
+  color: var(--petrol);
+  transition: transform 0.3s var(--ease);
+}
+
+.pr-qna__item[open] .pr-qna__q svg {
+  transform: rotate(45deg);
+  color: var(--signal);
 }
 
 .pr-qna__a {
-  margin-top: 6px;
+  margin-top: 10px;
   font-size: 13.5px;
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 /* ==================================================================
@@ -1531,14 +1612,15 @@
 }
 
 .pr-fbt__img {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 8px;
   object-fit: cover;
+  flex: none;
 }
 
 .pr-fbt__item span {
-  max-width: 14ch;
+  max-width: 16ch;
   font-size: 13px;
   color: var(--ink);
 }
@@ -1549,7 +1631,7 @@
 }
 
 .pr-fbt__plus {
-  font-size: 20px;
+  font-size: 22px;
   color: var(--muted);
   font-weight: 300;
 }
@@ -1565,30 +1647,19 @@
   font-size: 14.5px;
 }
 
-/* ==================================================================
-   RELATED PRODUCTS
-   ================================================================== */
-.pr-head {
-  margin-bottom: var(--head-mb);
-}
-
-.pr-head h2 {
+.pr-fbt__summary strong {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(22px, 2.6vw, 30px);
-  letter-spacing: -0.02em;
+  font-size: 20px;
 }
 
-.pr-head p {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
+/* ==================================================================
+   RELATED PRODUCTS  (equal image ratio + equal buttons)
+   ================================================================== */
 .pr-related__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--gap-card);
+  align-items: stretch;
 }
 
 .pr-card {
@@ -1627,9 +1698,19 @@
   transform: scale(1.06);
 }
 
-/* wishlist heart overlay on the related-product image — theme's
-   signal orange when saved, matching Home1's own wishlist heart,
-   with an idle glow ring while saved */
+.pr-card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--signal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .pr-wish {
   position: absolute;
   top: 12px;
@@ -1682,7 +1763,7 @@
 
 .pr-card__body > strong {
   font-family: var(--font-display);
-  font-size: 15.5px;
+  font-size: 16.5px;
   font-weight: 700;
 }
 
@@ -1691,18 +1772,14 @@
   color: var(--muted);
 }
 
-/* pushes the Add to cart button to the bottom of the card,
-   mirrors Home1's .ah-card__body .ah-btn */
-.pr-card__body .pr-btn {
-  margin-top: auto;
+.pr-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
 }
 
-.pr-card__body .pr-price + .pr-btn {
-  margin-top: 12px;
-}
-
-/* card price row: cancelled amount first, real price second,
-   same baseline alignment as the main buy box */
 .pr-price {
   display: flex;
   align-items: baseline;
@@ -1724,91 +1801,233 @@
   color: #7d8a8e;
 }
 
-/* ==================================================================
-   FOOTER + TOAST
-   ================================================================== */
-.pr-footer {
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid var(--line);
-  background: #08282c;
-  color: #b4c8ca;
+/* button always sits at the card bottom, same width in every card */
+.pr-card__body .pr-btn {
+  margin-top: auto;
 }
 
-.pr-footer__grid {
+.pr-card__body .pr-price + .pr-btn {
+  margin-top: 14px;
+}
+
+/* ==================================================================
+   PAY LATER BANNER
+   ================================================================== */
+.pr-paybanner {
+  padding-block: var(--section-y);
+  border-top: 1px solid var(--line);
+}
+
+.pr-paybanner__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(24px, 4vw, 48px) clamp(24px, 5vw, 64px);
+  border-radius: 20px;
+  background: linear-gradient(120deg, #cfe6e8 0%, #e3f1f2 55%, #b9d9dc 100%);
+  overflow: hidden;
+}
+
+.pr-paybanner__copy h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(24px, 3.4vw, 42px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: #33454a;
+}
+
+.pr-paybanner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 700;
+  color: var(--petrol-2);
+  transition: gap 0.25s var(--ease), color 0.2s ease;
+}
+
+.pr-paybanner__cta:hover {
+  gap: 12px;
+  color: var(--signal);
+}
+
+.pr-paybanner__art {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: none;
+}
+
+.pr-paybanner__dial {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  place-items: center;
+  width: clamp(64px, 8vw, 100px);
+  height: clamp(64px, 8vw, 100px);
+  border-radius: 24px;
+  background: var(--signal);
+  color: #fff;
+  box-shadow: 0 18px 32px -16px rgba(242, 84, 45, 0.7);
+  transform: rotate(-6deg);
+}
+
+.pr-paybanner__brand {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(18px, 2.2vw, 28px);
+  letter-spacing: -0.03em;
+  color: var(--petrol);
+  line-height: 1;
+}
+
+.pr-paybanner__brand b {
+  margin-top: 4px;
+  font-size: clamp(28px, 4.4vw, 56px);
+  font-style: italic;
+  letter-spacing: -0.04em;
+  color: var(--petrol-2);
+}
+
+/* ==================================================================
+   FOOTER
+   ================================================================== */
+.pr-foot {
+  background: #1f2222;
+  color: #d7dcdc;
+}
+
+.pr-foot__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.5fr) minmax(0, 1.5fr);
   gap: 32px;
-  padding-top: clamp(44px, 6vw, 72px);
+  padding-top: 44px;
   padding-bottom: 36px;
 }
 
-.pr-footer__brand strong {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 24px;
-  letter-spacing: -0.03em;
-  color: #fff;
-}
-
-.pr-footer__brand p {
-  max-width: 32ch;
-  margin-top: 12px;
-  font-size: 14px;
-  line-height: 1.65;
-}
-
-.pr-footer__col {
+.pr-foot__col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.pr-footer__col h4 {
+.pr-foot__col--divider {
+  padding-left: 32px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.pr-foot__col h4 {
   margin-bottom: 4px;
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8f9a9a;
 }
 
-.pr-footer__col button {
+.pr-foot__col h4:not(:first-child) {
+  margin-top: 14px;
+}
+
+.pr-foot__link {
   text-align: left;
-  font-size: 14px;
-  color: #b4c8ca;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.pr-footer__col button:hover {
+.pr-foot__link:hover {
   color: var(--signal);
   transform: translateX(3px);
 }
 
-.pr-footer__bottom {
+.pr-foot__addr {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding-block: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-direction: column;
+  gap: 2px;
   font-size: 13px;
-  color: #86a0a3;
+  line-height: 1.6;
+  color: #cfd6d6;
 }
 
-.pr-footer__mark {
-  margin-top: 8px;
-  margin-bottom: -0.14em;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(70px, 18vw, 260px);
-  line-height: 0.8;
-  letter-spacing: -0.05em;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.055);
-  white-space: nowrap;
-  user-select: none;
-  pointer-events: none;
+.pr-foot__addr b {
+  font-weight: 600;
+  color: #fff;
 }
 
+.pr-foot__social {
+  display: flex;
+  gap: 10px;
+}
+
+.pr-foot__social button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  color: #fff;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.25s var(--ease);
+}
+
+.pr-foot__social button:hover {
+  background: var(--signal);
+  border-color: var(--signal);
+  transform: translateY(-3px);
+}
+
+.pr-foot__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  padding-block: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.pr-foot__barlinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+}
+
+.pr-foot__barlinks .pr-foot__link {
+  font-weight: 500;
+}
+
+.pr-foot__copy {
+  font-size: 13px;
+  color: #cfd6d6;
+}
+
+.pr-foot__pay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pr-foot__pay span {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: #fff;
+  color: #1f2222;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ==================================================================
+   TOAST + BACK TO TOP
+   ================================================================== */
 .pr-toast {
   position: fixed;
   left: 50%;
@@ -1840,80 +2059,10 @@
   }
 }
 
-/* ==================================================================
-   STICKY MINI BUY BAR
-   ================================================================== */
-.pr-minibar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -14px 30px -20px rgba(11, 58, 64, 0.3);
-  transform: translateY(100%);
-  transition: transform 0.4s var(--ease);
-}
-
-.pr-minibar.is-in {
-  transform: translateY(0);
-}
-
-.pr-minibar__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-block: 12px;
-}
-
-.pr-minibar__info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.pr-minibar__img {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  object-fit: cover;
-  flex: none;
-}
-
-.pr-minibar__info div {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.pr-minibar__info strong {
-  font-size: 13.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 44ch;
-}
-
-.pr-minibar__info span {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-/* ==================================================================
-   BACK TO TOP
-   ================================================================== */
 .pr-totop {
   position: fixed;
   right: clamp(16px, 3vw, 32px);
-  bottom: 92px;
+  bottom: 24px;
   z-index: 45;
   display: grid;
   place-items: center;
@@ -1942,6 +2091,17 @@
 /* ==================================================================
    RESPONSIVE
    ================================================================== */
+@media (max-width: 1180px) {
+  .pr-foot__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pr-foot__col--divider {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
 @media (max-width: 1080px) {
   .pr-related__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1971,29 +2131,13 @@
   }
 
   .pr-offers__grid,
-  .pr-highlights__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pr-about__grid {
-    grid-template-columns: 1fr;
-  }
-
+  .pr-highlights__grid,
+  .pr-about__grid,
   .pr-materials__grid,
-  .pr-sizeguide__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pr-care__list {
-    grid-template-columns: 1fr;
-  }
-
+  .pr-sizeguide__grid,
+  .pr-care__list,
   .pr-reviews-wrap {
     grid-template-columns: 1fr;
-  }
-
-  .pr-footer__grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -2027,6 +2171,7 @@
 
   .pr-related__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .pr-fbt__row {
@@ -2042,6 +2187,10 @@
     display: none;
   }
 
+  .pr-fbt__item {
+    flex: 1;
+  }
+
   .pr-fbt__summary {
     flex-direction: column;
     align-items: stretch;
@@ -2051,26 +2200,19 @@
     width: 100%;
   }
 
-  .pr-footer__grid {
+  .pr-paybanner__card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pr-foot__grid {
     grid-template-columns: 1fr 1fr;
     gap: 24px 16px;
   }
 
-  .pr-footer__brand {
-    grid-column: 1 / -1;
-  }
-
-  .pr-footer__bottom {
+  .pr-foot__bar {
     flex-direction: column;
-    gap: 4px;
-  }
-
-  .pr-minibar__info strong {
-    max-width: 24ch;
-  }
-
-  .pr-totop {
-    bottom: 84px;
+    align-items: flex-start;
   }
 }
 

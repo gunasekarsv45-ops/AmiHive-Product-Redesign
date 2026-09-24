@@ -24,8 +24,8 @@
   --font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
   --font-body: 'Instrument Sans', system-ui, sans-serif;
 
-  /* layout */
-  --gutter: clamp(16px, 4vw, 40px);
+  /* layout — smaller gutter = less blank space on left/right */
+  --gutter: clamp(12px, 2vw, 24px);
   --section-y: clamp(56px, 8vw, 104px);
   --head-mb: clamp(24px, 3.5vw, 40px);
   --gap-card: 20px; /* product cards, deals rail */
@@ -125,9 +125,14 @@
    ================================================================== */
 .ah-wrap {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1560px;
   margin-inline: auto;
   padding-inline: var(--gutter);
+}
+
+/* gallery section uses its own wrapper, keep it in line with .ah-wrap */
+.ah-root .pg__inner {
+  max-width: 1560px;
 }
 
 .ah-section {
@@ -210,10 +215,8 @@
   background: var(--petrol-2);
 }
 
-/* CHANGED: was an outline-only button (transparent bg + dark border),
-   which is why it looked different from .ah-btn--ink. Now uses the exact
-   same fill/hover colors as .ah-btn--ink, so every "Add to cart" button
-   on the page renders identically regardless of which class is used. */
+/* Same fill/hover colors as .ah-btn--ink, so every "Add to cart"
+   button on the page renders identically. */
 .ah-btn--line {
   background: var(--ink);
   color: #fff;
@@ -1928,10 +1931,6 @@
     display: none;
   }
 
-  .ah-iconbtn--account {
-    display: none;
-  }
-
   .ah-rail {
     --cols: 3;
   }
@@ -2189,9 +2188,8 @@
     transform: none;
   }
   .ah-tile {
-  display: block;
-  color: #fff;
-  text-decoration: none;
+    display: block;
+    color: #fff;
+    text-decoration: none;
   }
-  
 }

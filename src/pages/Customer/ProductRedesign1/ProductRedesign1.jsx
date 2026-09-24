@@ -18,8 +18,6 @@ import {
 
 /* ------------------------------------------------------------------
    Extra icon glyphs this page needs on top of Home1's ICONS.
-   Merged into ALL_ICONS below so one <AnyIcon /> can render either
-   set without guessing which map a name lives in.
 ------------------------------------------------------------------- */
 const MINI_ICONS = {
   percent: 'M19 5 5 19M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM16.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
@@ -31,6 +29,11 @@ const MINI_ICONS = {
   drop: 'M12 3c4 5 7 8.5 7 12a7 7 0 1 1-14 0c0-3.5 3-7 7-12z',
   leaf: 'M20 4C10 4 4 10 4 20c10 0 16-6 16-16zM4 20l8-8',
   up: 'M12 19V5M5 12l7-7 7 7',
+  facebook: 'M15 3h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z',
+  x: 'M4 4l16 16M20 4L4 20',
+  youtube: 'M3 8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM10 9l5 3-5 3z',
+  instagram:
+    'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM17.5 6.5h.01',
 };
 
 const ALL_ICONS = { ...ICONS, ...MINI_ICONS };
@@ -54,8 +57,7 @@ function AnyIcon({ name, size = 18 }) {
 }
 
 /* ------------------------------------------------------------------
-   Scroll-reveal — same idea as Home1's bento reveal, kept local so
-   Home1.jsx doesn't need touching.
+   Scroll-reveal
 ------------------------------------------------------------------- */
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
@@ -86,8 +88,7 @@ function useInView(threshold = 0.15) {
   return [ref, seen];
 }
 
-/* Merge the two catalogs from Home1 into one lookup table so any
-   card clicked on the home page (Bestsellers or Deals) resolves here. */
+/* Merge both catalogs from Home1 into one lookup table */
 function buildCatalog() {
   const merged = PRODUCTS.map((p) => ({ ...p }));
 
@@ -145,26 +146,10 @@ function getRatingBreakdown(rating) {
 }
 
 const OFFERS = [
-  {
-    icon: 'percent',
-    title: 'Bank offer',
-    text: '10% instant discount up to ₹1,500 on select bank cards',
-  },
-  {
-    icon: 'card',
-    title: 'No cost EMI',
-    text: 'Available on orders above ₹3,000, starting from 3 months',
-  },
-  {
-    icon: 'percent',
-    title: 'Partner offer',
-    text: 'Get a GST invoice and save up to 18% on business orders',
-  },
-  {
-    icon: 'truck',
-    title: 'Exchange offer',
-    text: 'Up to ₹2,000 off when you exchange your old watch',
-  },
+  { icon: 'percent', title: 'Bank offer', text: '10% instant discount up to ₹1,500 on select bank cards' },
+  { icon: 'card', title: 'No cost EMI', text: 'Available on orders above ₹3,000, starting from 3 months' },
+  { icon: 'percent', title: 'Partner offer', text: 'Get a GST invoice and save up to 18% on business orders' },
+  { icon: 'truck', title: 'Exchange offer', text: 'Up to ₹2,000 off when you exchange your old watch' },
 ];
 
 const QNA = [
@@ -183,39 +168,15 @@ const QNA = [
 ];
 
 const MATERIALS = [
-  {
-    icon: 'gem',
-    title: 'Sapphire crystal',
-    text: 'A scratch-resistant sapphire lens keeps the dial clear through years of daily wear.',
-  },
-  {
-    icon: 'shield',
-    title: 'Stainless steel case',
-    text: 'Solid 316L stainless steel, brushed and polished by hand for a lasting finish.',
-  },
-  {
-    icon: 'leaf',
-    title: 'Considered materials',
-    text: 'Full-grain leather and steel bracelets, chosen to age well rather than wear out.',
-  },
+  { icon: 'gem', title: 'Sapphire crystal', text: 'A scratch-resistant sapphire lens keeps the dial clear through years of daily wear.' },
+  { icon: 'shield', title: 'Stainless steel case', text: 'Solid 316L stainless steel, brushed and polished by hand for a lasting finish.' },
+  { icon: 'leaf', title: 'Considered materials', text: 'Full-grain leather and steel bracelets, chosen to age well rather than wear out.' },
 ];
 
 const SIZE_GUIDE = [
-  {
-    size: 38,
-    wrist: '150–175 mm',
-    note: 'A closer, compact fit — popular for slimmer wrists.',
-  },
-  {
-    size: 40,
-    wrist: '165–190 mm',
-    note: 'The most versatile size, suits most wrist widths.',
-  },
-  {
-    size: 42,
-    wrist: '180–210 mm',
-    note: 'A bolder presence on the wrist, for larger frames.',
-  },
+  { size: 38, wrist: '150–175 mm', note: 'A closer, compact fit — popular for slimmer wrists.' },
+  { size: 40, wrist: '165–190 mm', note: 'The most versatile size, suits most wrist widths.' },
+  { size: 42, wrist: '180–210 mm', note: 'A bolder presence on the wrist, for larger frames.' },
 ];
 
 const CARE_TIPS = [
@@ -225,9 +186,55 @@ const CARE_TIPS = [
   'Service the movement every 3–5 years to keep it running accurately.',
 ];
 
-function goHome() {
+/* Header menu links (dropdown behind the 3-line button) */
+const MENU = [
+  { label: 'Home', hash: '' },
+  { label: 'Deals of the day', hash: '#deals' },
+  { label: 'Build your own', hash: '#build' },
+  { label: 'Bestsellers', hash: '#featured' },
+  { label: 'Reviews', hash: '#reviews' },
+];
+
+/* ---- footer content — edit COMPANY with your real details ---- */
+const COMPANY = {
+  name: 'Amihive Timepieces Private Limited',
+  mailLines: ['[Building / Street],', '[Area, City – PIN code],', '[State], India'],
+  officeLines: ['[Building / Street],', '[Area, City – PIN code],', '[State], India'],
+  cin: '[CIN number]',
+  phone: '[Support phone number]',
+  email: 'support@amihive.com',
+};
+
+const FOOT_ABOUT = ['Contact Us', 'About Us', 'Careers', 'Amihive Stories', 'Press', 'Corporate Information'];
+const FOOT_HELP = ['Payments', 'Shipping', 'Cancellation & Returns', 'Warranty Claims', 'FAQ'];
+const FOOT_POLICY = [
+  'Cancellation & Returns',
+  'Terms Of Use',
+  'Security',
+  'Privacy',
+  'Sitemap',
+  'Grievance Redressal',
+  'Warranty Policy',
+];
+const FOOT_SOCIAL = [
+  { icon: 'facebook', label: 'Facebook' },
+  { icon: 'x', label: 'X' },
+  { icon: 'youtube', label: 'YouTube' },
+  { icon: 'instagram', label: 'Instagram' },
+];
+const FOOT_BAR = ['Gift Cards', 'Track Order', 'Help Center', 'Careers'];
+const PAYMENTS = ['VISA', 'Mastercard', 'RuPay', 'UPI', 'Net Banking', 'Cash on Delivery'];
+
+function goHome(hash = '') {
   window.history.pushState({}, '', '/');
   window.dispatchEvent(new PopStateEvent('popstate'));
+
+  if (hash) {
+    setTimeout(() => {
+      const target = document.getElementById(hash.slice(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    }, 250);
+  }
 }
 
 function ProductRedesign1({ productId }) {
@@ -243,19 +250,14 @@ function ProductRedesign1({ productId }) {
   const [shotDir, setShotDir] = useState(1);
   const [pincode, setPincode] = useState('');
   const [deliveryChecked, setDeliveryChecked] = useState(false);
-  const [fbtSelected, setFbtSelected] = useState({
-    0: true,
-    1: true,
-    2: true,
-  });
-  const [miniVisible, setMiniVisible] = useState(false);
+  const [fbtSelected, setFbtSelected] = useState({ 0: true, 1: true, 2: true });
   const [showTop, setShowTop] = useState(false);
   const [cardWish, setCardWish] = useState({});
   const [addedMain, setAddedMain] = useState(false);
   const [cardAdded, setCardAdded] = useState({});
+  const [menuOpen, setMenuOpen] = useState(false);
   const toastTimer = useRef(null);
   const cardAddedTimers = useRef({});
-  const buyRef = useRef(null);
 
   /* reveal-on-scroll for the content sections below the fold */
   const [offersRef, offersIn] = useInView();
@@ -283,6 +285,7 @@ function ProductRedesign1({ productId }) {
     setFbtSelected({ 0: true, 1: true, 2: true });
     setAddedMain(false);
     setCardAdded({});
+    setMenuOpen(false);
     Object.values(cardAddedTimers.current).forEach(clearTimeout);
     cardAddedTimers.current = {};
     window.scrollTo(0, 0);
@@ -295,24 +298,6 @@ function ProductRedesign1({ productId }) {
     },
     []
   );
-
-  /* sticky mini buy bar: shows once the main buy box scrolls out of view */
-  useEffect(() => {
-    const el = buyRef.current;
-    if (!el || !('IntersectionObserver' in window)) return undefined;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setMiniVisible(
-          !entry.isIntersecting && entry.boundingClientRect.top < 0
-        );
-      },
-      { threshold: 0, rootMargin: '-84px 0px 0px 0px' }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [productId]);
 
   /* back-to-top button */
   useEffect(() => {
@@ -337,56 +322,30 @@ function ProductRedesign1({ productId }) {
   const strapExtra = strap.extra || 0;
   const unitPrice = product.price + strapExtra;
   const total = unitPrice * qty;
-  const savePerUnit = product.originalPrice
-    ? product.originalPrice - product.price
-    : 0;
+  const savePerUnit = product.originalPrice ? product.originalPrice - product.price : 0;
 
   const discountPct = product.originalPrice
-    ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100
-      )
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
   const related = CATALOG.filter((p) => p.id !== product.id).slice(0, 8);
 
-  const fbtItems = useMemo(
-    () => [product, ...related.slice(0, 2)],
-    [product, related]
-  );
+  const fbtItems = useMemo(() => [product, ...related.slice(0, 2)], [product, related]);
 
   const highlights = useMemo(() => getHighlights(product), [product]);
 
-  const ratingBars = useMemo(
-    () => getRatingBreakdown(product.rating),
-    [product]
-  );
+  const ratingBars = useMemo(() => getRatingBreakdown(product.rating), [product]);
 
   const specs = useMemo(
     () => [
       { icon: 'ruler', label: 'Case size', value: `${size} mm` },
       { icon: 'gem', label: 'Dial', value: dial.name },
       { icon: 'leaf', label: 'Strap', value: strap.name },
-      {
-        icon: 'clock',
-        label: 'Movement',
-        value: 'Automatic, self-winding',
-      },
+      { icon: 'clock', label: 'Movement', value: 'Automatic, self-winding' },
       { icon: 'drop', label: 'Water resistance', value: '5 ATM' },
-      {
-        icon: 'shield',
-        label: 'Warranty',
-        value: '2 years, international',
-      },
-      {
-        icon: 'bag',
-        label: 'In the box',
-        value: 'Watch, box, warranty card',
-      },
-      {
-        icon: 'check',
-        label: 'Case back',
-        value: 'Screw-down, sealed',
-      },
+      { icon: 'shield', label: 'Warranty', value: '2 years, international' },
+      { icon: 'bag', label: 'In the box', value: 'Watch, box, warranty card' },
+      { icon: 'check', label: 'Case back', value: 'Screw-down, sealed' },
     ],
     [size, dial, strap]
   );
@@ -417,9 +376,7 @@ function ProductRedesign1({ productId }) {
   };
 
   const addFbtToCart = () =>
-    showToast(
-      `Added ${fbtCount} item${fbtCount === 1 ? '' : 's'} to your cart.`
-    );
+    showToast(`Added ${fbtCount} item${fbtCount === 1 ? '' : 's'} to your cart.`);
 
   const handlePrevShot = () => {
     setShotDir(-1);
@@ -458,75 +415,65 @@ function ProductRedesign1({ productId }) {
   };
 
   const handleFbtToggle = (idx) => () => {
-    setFbtSelected((prev) => ({
-      ...prev,
-      [idx]: !prev[idx],
-    }));
+    setFbtSelected((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   const handleQtyDown = () => setQty((q) => Math.max(1, q - 1));
   const handleQtyUp = () => setQty((q) => Math.min(9, q + 1));
   const handleWishToggle = () => setWish((w) => !w);
   const handleSizePick = (s) => () => setSize(s);
-  const scrollToTop = () =>
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  /* related-product card handlers: wishlist heart + add-to-cart,
-     matching Home1's ah-wish / ah-btn behaviour, with the same
-     "Added" morph feedback as the main buy box */
+  const handleMenuLink = (hash) => () => {
+    setMenuOpen(false);
+    goHome(hash);
+  };
+
+  const handleProfileClick = () => showToast('Profile page coming soon.');
+  const handleFooterLink = (label) => () => showToast(`${label} page is coming soon.`);
+
+  /* related-product card handlers */
   const handleCardWishClick = (id) => (e) => {
     e.stopPropagation();
-    setCardWish((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setCardWish((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleRelatedAddToCart = (p) => (e) => {
     e.stopPropagation();
 
     showToast(`Added "${p.name}" to your cart.`);
-
-    setCardAdded((prev) => ({
-      ...prev,
-      [p.id]: true,
-    }));
+    setCardAdded((prev) => ({ ...prev, [p.id]: true }));
 
     clearTimeout(cardAddedTimers.current[p.id]);
-
     cardAddedTimers.current[p.id] = setTimeout(() => {
-      setCardAdded((prev) => ({
-        ...prev,
-        [p.id]: false,
-      }));
+      setCardAdded((prev) => ({ ...prev, [p.id]: false }));
     }, 1500);
   };
 
   const categoryLabel =
-    product.type === 'strap'
-      ? 'Straps'
-      : product.type === 'accessory'
-      ? 'Accessories'
-      : 'Watches';
+    product.type === 'strap' ? 'Straps' : product.type === 'accessory' ? 'Accessories' : 'Watches';
+
+  const typeLabel =
+    product.type === 'strap' ? 'Strap' : product.type === 'accessory' ? 'Accessory' : 'Watch';
 
   return (
     <div className="pr-root">
       {/* ---------- header ---------- */}
       <header className="pr-header">
         <div className="pr-wrap pr-header__row">
-          <button
-            type="button"
-            className="pr-back"
-            onClick={goHome}
-          >
-            <Icon name="left" size={18} /> Back to shop
-          </button>
+          <div className="pr-header__left">
+            <button
+              type="button"
+              className="pr-iconbtn"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <Icon name={menuOpen ? 'close' : 'menu'} />
+            </button>
+          </div>
 
-          <button
-            type="button"
-            className="pr-logo"
-            onClick={goHome}
-          >
+          <button type="button" className="pr-logo" onClick={() => goHome()}>
             amihive<i className="pr-logo__hand" />
           </button>
 
@@ -541,23 +488,44 @@ function ProductRedesign1({ productId }) {
               <Icon name="heart" key={`h-${wish}`} />
             </button>
 
+            <button type="button" className="pr-iconbtn" aria-label="Cart">
+              <Icon name="bag" />
+            </button>
+
             <button
               type="button"
               className="pr-iconbtn"
-              aria-label="Cart"
+              aria-label="Profile"
+              onClick={handleProfileClick}
             >
-              <Icon name="bag" />
+              <Icon name="user" />
             </button>
           </div>
         </div>
+
+        {menuOpen && (
+          <nav className="pr-menu" aria-label="Main menu">
+            <div className="pr-wrap pr-menu__inner">
+              {MENU.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  className="pr-menu__link"
+                  onClick={handleMenuLink(item.hash)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
       </header>
 
+      {menuOpen && <div className="pr-scrim" onClick={() => setMenuOpen(false)} />}
+
       {/* ---------- breadcrumb ---------- */}
-      <nav
-        className="pr-crumb pr-wrap"
-        aria-label="Breadcrumb"
-      >
-        <button type="button" onClick={goHome}>
+      <nav className="pr-crumb pr-wrap" aria-label="Breadcrumb">
+        <button type="button" onClick={() => goHome()}>
           Home
         </button>
 
@@ -585,11 +553,7 @@ function ProductRedesign1({ productId }) {
                 eager
               />
 
-              {discountPct > 0 && (
-                <span className="pr-gallery__badge">
-                  {discountPct}% off
-                </span>
-              )}
+              {discountPct > 0 && <span className="pr-gallery__badge">{discountPct}% off</span>}
 
               <button
                 type="button"
@@ -609,20 +573,14 @@ function ProductRedesign1({ productId }) {
                 <Icon name="right" size={20} />
               </button>
 
-              <div
-                className="pr-carousel__dots"
-                role="tablist"
-                aria-label="Choose photo"
-              >
+              <div className="pr-carousel__dots" role="tablist" aria-label="Choose photo">
                 {shots.map((src, i) => (
                   <button
                     key={i}
                     type="button"
                     role="tab"
                     aria-selected={i === activeShot}
-                    className={`pr-carousel__dot ${
-                      i === activeShot ? 'is-on' : ''
-                    }`}
+                    className={`pr-carousel__dot ${i === activeShot ? 'is-on' : ''}`}
                     onClick={handleThumbClick(i)}
                     aria-label={`Photo ${i + 1}`}
                   />
@@ -635,18 +593,12 @@ function ProductRedesign1({ productId }) {
                 <button
                   key={i}
                   type="button"
-                  className={`pr-thumb ${
-                    i === activeShot ? 'is-on' : ''
-                  }`}
+                  className={`pr-thumb ${i === activeShot ? 'is-on' : ''}`}
                   onClick={handleThumbClick(i)}
                   aria-label={`View photo ${i + 1}`}
                   aria-pressed={i === activeShot}
                 >
-                  <SmartImage
-                    className="pr-thumb__img"
-                    src={src}
-                    alt=""
-                  />
+                  <SmartImage className="pr-thumb__img" src={src} alt="" />
                 </button>
               ))}
             </div>
@@ -663,9 +615,7 @@ function ProductRedesign1({ productId }) {
 
             <h1>{product.name}</h1>
 
-            <p className="pr-info__subtitle">
-              {product.subtitle}
-            </p>
+            <p className="pr-info__subtitle">{product.subtitle}</p>
 
             <div className="pr-info__rating">
               <Stars value={product.rating} />
@@ -673,38 +623,21 @@ function ProductRedesign1({ productId }) {
               <span>({product.ratings} ratings)</span>
             </div>
 
-            {/* cancelled/original amount first, then the real price,
-                then the discount badge */}
             <div className="pr-info__price">
               {product.originalPrice > 0 && (
-                <s>
-                  ₹
-                  {formatPrice(
-                    product.originalPrice + strapExtra
-                  )}
-                </s>
+                <s>₹{formatPrice(product.originalPrice + strapExtra)}</s>
               )}
 
-              <strong key={total}>
-                ₹{formatPrice(unitPrice)}
-              </strong>
+              <strong key={total}>₹{formatPrice(unitPrice)}</strong>
 
-              {discountPct > 0 && (
-                <span className="pr-info__pct">
-                  {discountPct}% off
-                </span>
-              )}
+              {discountPct > 0 && <span className="pr-info__pct">{discountPct}% off</span>}
             </div>
 
             {savePerUnit > 0 && (
-              <span className="pr-info__save">
-                You save ₹{formatPrice(savePerUnit)} on this piece
-              </span>
+              <span className="pr-info__save">You save ₹{formatPrice(savePerUnit)} on this piece</span>
             )}
 
-            <span className="pr-info__tax">
-              Inclusive of all taxes
-            </span>
+            <span className="pr-info__tax">Inclusive of all taxes</span>
 
             <fieldset className="pr-opt">
               <legend>
@@ -716,9 +649,7 @@ function ProductRedesign1({ productId }) {
                   <button
                     key={d.id}
                     type="button"
-                    className={`pr-swatch ${
-                      dial.id === d.id ? 'is-on' : ''
-                    }`}
+                    className={`pr-swatch ${dial.id === d.id ? 'is-on' : ''}`}
                     style={{ '--c': d.color }}
                     aria-pressed={dial.id === d.id}
                     aria-label={d.name}
@@ -728,15 +659,9 @@ function ProductRedesign1({ productId }) {
               </div>
             </fieldset>
 
-            {/* strap — shown as real photo swatches, not a plain text pill */}
             <fieldset className="pr-opt">
               <legend>
-                Strap{' '}
-                <span>
-                  {strapExtra
-                    ? `+₹${formatPrice(strapExtra)}`
-                    : 'Included'}
-                </span>
+                Strap <span>{strapExtra ? `+₹${formatPrice(strapExtra)}` : 'Included'}</span>
               </legend>
 
               <div className="pr-opt__row pr-opt__row--strap">
@@ -744,26 +669,16 @@ function ProductRedesign1({ productId }) {
                   <button
                     key={s.id}
                     type="button"
-                    className={`pr-strapcard ${
-                      strap.id === s.id ? 'is-on' : ''
-                    }`}
+                    className={`pr-strapcard ${strap.id === s.id ? 'is-on' : ''}`}
                     aria-pressed={strap.id === s.id}
                     onClick={() => setStrap(s)}
                   >
-                    <SmartImage
-                      className="pr-strapcard__img"
-                      src={img(s.photo, 200)}
-                      alt={s.name}
-                    />
+                    <SmartImage className="pr-strapcard__img" src={img(s.photo, 200)} alt={s.name} />
 
-                    <span className="pr-strapcard__name">
-                      {s.name}
-                    </span>
+                    <span className="pr-strapcard__name">{s.name}</span>
 
                     <em className="pr-strapcard__price">
-                      {s.extra
-                        ? `+₹${formatPrice(s.extra)}`
-                        : 'Included'}
+                      {s.extra ? `+₹${formatPrice(s.extra)}` : 'Included'}
                     </em>
                   </button>
                 ))}
@@ -780,9 +695,7 @@ function ProductRedesign1({ productId }) {
                   <button
                     key={s}
                     type="button"
-                    className={`pr-seg ${
-                      size === s ? 'is-on' : ''
-                    }`}
+                    className={`pr-seg ${size === s ? 'is-on' : ''}`}
                     aria-pressed={size === s}
                     onClick={handleSizePick(s)}
                   >
@@ -792,38 +705,27 @@ function ProductRedesign1({ productId }) {
               </div>
             </fieldset>
 
-            <div className="pr-buy" ref={buyRef}>
+            <div className="pr-buy">
               <div className="pr-qty">
-                <button
-                  type="button"
-                  onClick={handleQtyDown}
-                  aria-label="Decrease quantity"
-                >
+                <button type="button" onClick={handleQtyDown} aria-label="Decrease quantity">
                   −
                 </button>
 
                 <span key={qty}>{qty}</span>
 
-                <button
-                  type="button"
-                  onClick={handleQtyUp}
-                  aria-label="Increase quantity"
-                >
+                <button type="button" onClick={handleQtyUp} aria-label="Increase quantity">
                   +
                 </button>
               </div>
 
               <button
                 type="button"
-                className={`pr-btn pr-btn--signal ${
-                  addedMain ? 'is-added' : ''
-                }`}
+                className={`pr-btn pr-btn--signal ${addedMain ? 'is-added' : ''}`}
                 onClick={addToCart}
               >
                 {addedMain ? (
                   <>
-                    <Icon name="check" size={18} /> Added to Cart
-                    (x{qty})
+                    <Icon name="check" size={18} /> Added to Cart (x{qty})
                   </>
                 ) : (
                   <>
@@ -834,18 +736,11 @@ function ProductRedesign1({ productId }) {
 
               <button
                 type="button"
-                className={`pr-btn pr-btn--line pr-wishbtn ${
-                  wish ? 'is-on' : ''
-                }`}
+                className={`pr-btn pr-btn--line pr-wishbtn ${wish ? 'is-on' : ''}`}
                 onClick={handleWishToggle}
                 aria-pressed={wish}
               >
-                <Icon
-                  name="heart"
-                  size={18}
-                  key={`w-${wish}`}
-                />{' '}
-                {wish ? 'Saved' : 'Save'}
+                <Icon name="heart" size={18} key={`w-${wish}`} /> {wish ? 'Saved' : 'Save'}
               </button>
             </div>
 
@@ -863,11 +758,7 @@ function ProductRedesign1({ productId }) {
                   aria-label="Delivery pincode"
                 />
 
-                <button
-                  type="button"
-                  onClick={handleCheckDelivery}
-                  disabled={pincode.length !== 6}
-                >
+                <button type="button" onClick={handleCheckDelivery} disabled={pincode.length !== 6}>
                   Check
                 </button>
               </div>
@@ -875,24 +766,18 @@ function ProductRedesign1({ productId }) {
               {deliveryChecked && (
                 <p className="pr-delivery__result">
                   <Icon name="check" size={15} /> Delivery by{' '}
-                  {new Date(
-                    Date.now() + 4 * 86400000
-                  ).toLocaleDateString('en-IN', {
+                  {new Date(Date.now() + 4 * 86400000).toLocaleDateString('en-IN', {
                     day: 'numeric',
                     month: 'short',
                   })}{' '}
-                  to {pincode} — free shipping, cash on delivery
-                  available.
+                  to {pincode} — free shipping, cash on delivery available.
                 </p>
               )}
             </div>
 
             <div className="pr-assure">
               {ASSURANCES.map((a) => (
-                <div
-                  className="pr-assure__item"
-                  key={a.title}
-                >
+                <div className="pr-assure__item" key={a.title}>
                   <Icon name={a.icon} size={18} />
                   <span>{a.title}</span>
                 </div>
@@ -904,21 +789,13 @@ function ProductRedesign1({ productId }) {
         {/* ---------- offers ---------- */}
         <section
           ref={offersRef}
-          className={`pr-offers pr-wrap pr-reveal ${
-            offersIn ? 'is-in' : ''
-          }`}
+          className={`pr-offers pr-wrap pr-reveal ${offersIn ? 'is-in' : ''}`}
         >
-          <h2 className="pr-section-title">
-            Available offers
-          </h2>
+          <h2 className="pr-section-title">Available offers</h2>
 
           <div className="pr-offers__grid">
             {OFFERS.map((o, i) => (
-              <div
-                className="pr-offer"
-                style={{ '--i': i }}
-                key={o.title}
-              >
+              <div className="pr-offer" style={{ '--i': i }} key={o.title}>
                 <span className="pr-offer__icon">
                   <AnyIcon name={o.icon} size={19} />
                 </span>
@@ -935,21 +812,13 @@ function ProductRedesign1({ productId }) {
         {/* ---------- highlights ---------- */}
         <section
           ref={highlightsRef}
-          className={`pr-highlights pr-wrap pr-reveal ${
-            highlightsIn ? 'is-in' : ''
-          }`}
+          className={`pr-highlights pr-wrap pr-reveal ${highlightsIn ? 'is-in' : ''}`}
         >
-          <h2 className="pr-section-title">
-            Highlights
-          </h2>
+          <h2 className="pr-section-title">Highlights</h2>
 
           <div className="pr-highlights__grid">
             {highlights.map((h, i) => (
-              <div
-                className="pr-highlight"
-                style={{ '--i': i }}
-                key={h}
-              >
+              <div className="pr-highlight" style={{ '--i': i }} key={h}>
                 <span className="pr-highlight__icon">
                   <Icon name="check" size={16} />
                 </span>
@@ -961,45 +830,23 @@ function ProductRedesign1({ productId }) {
         </section>
 
         {/* ---------- about / description ---------- */}
-        <section
-          ref={aboutRef}
-          className={`pr-about pr-wrap pr-reveal ${
-            aboutIn ? 'is-in' : ''
-          }`}
-        >
+        <section ref={aboutRef} className={`pr-about pr-wrap pr-reveal ${aboutIn ? 'is-in' : ''}`}>
           <div className="pr-about__grid">
             <div className="pr-about__media">
-              <SmartImage
-                className="pr-about__img"
-                src={img(product.image, 900)}
-                alt={product.name}
-              />
-
-              <div className="pr-about__stamp">
-                <Icon name="shield" size={20} />
-                <span>Built to last</span>
-              </div>
+              <SmartImage className="pr-about__img" src={img(product.image, 900)} alt={product.name} />
             </div>
 
             <div className="pr-about__copy">
-              <span className="pr-eyebrow">
-                The details matter
-              </span>
-
-              <h2 className="pr-section-title">
-                Made for everyday time
-              </h2>
+              <h2 className="pr-section-title">Made for everyday time</h2>
 
               <p>
-                Designed with a focus on timeless proportions,
-                reliable materials and details that become more
-                enjoyable with every wear.
+                Designed with a focus on timeless proportions, reliable materials and details that
+                become more enjoyable with every wear.
               </p>
 
               <p>
-                From the movement inside to the finishing outside,
-                every part is chosen to make the watch feel
-                considered without becoming complicated.
+                From the movement inside to the finishing outside, every part is chosen to make the
+                watch feel considered without becoming complicated.
               </p>
 
               <div className="pr-about__facts">
@@ -1023,27 +870,18 @@ function ProductRedesign1({ productId }) {
         </section>
 
         {/* ---------- specifications ---------- */}
-        <section
-          ref={specRef}
-          className={`pr-specgrid pr-wrap pr-reveal ${
-            specIn ? 'is-in' : ''
-          }`}
-        >
-          <h2 className="pr-section-title">
-            Specifications
-          </h2>
+        <section ref={specRef} className={`pr-specgrid pr-wrap pr-reveal ${specIn ? 'is-in' : ''}`}>
+          <h2 className="pr-section-title">Specifications</h2>
 
           <div className="pr-specgrid__grid">
-            {specs.map((s) => (
-              <div className="pr-spec" key={s.label}>
-                <span className="pr-spec__icon">
-                  <Icon name={s.icon} size={18} />
+            {specs.map((s, i) => (
+              <div className="pr-speccard" style={{ '--i': i }} key={s.label}>
+                <span className="pr-speccard__icon">
+                  <AnyIcon name={s.icon} size={18} />
                 </span>
 
-                <div>
-                  <span>{s.label}</span>
-                  <strong>{s.value}</strong>
-                </div>
+                <span className="pr-speccard__label">{s.label}</span>
+                <strong className="pr-speccard__value">{s.value}</strong>
               </div>
             ))}
           </div>
@@ -1052,25 +890,18 @@ function ProductRedesign1({ productId }) {
         {/* ---------- materials ---------- */}
         <section
           ref={materialsRef}
-          className={`pr-materials pr-wrap pr-reveal ${
-            materialsIn ? 'is-in' : ''
-          }`}
+          className={`pr-materials pr-wrap pr-reveal ${materialsIn ? 'is-in' : ''}`}
         >
-          <h2 className="pr-section-title">
-            Materials & craft
-          </h2>
+          <h2 className="pr-section-title">Materials and craft</h2>
 
           <div className="pr-materials__grid">
-            {MATERIALS.map((m) => (
-              <article
-                className="pr-material"
-                key={m.title}
-              >
+            {MATERIALS.map((m, i) => (
+              <article className="pr-material" style={{ '--i': i }} key={m.title}>
                 <span className="pr-material__icon">
                   <AnyIcon name={m.icon} size={22} />
                 </span>
 
-                <h3>{m.title}</h3>
+                <strong>{m.title}</strong>
                 <p>{m.text}</p>
               </article>
             ))}
@@ -1078,134 +909,89 @@ function ProductRedesign1({ productId }) {
         </section>
 
         {/* ---------- size guide ---------- */}
-        <section
-          ref={sizeRef}
-          className={`pr-sizeguide pr-wrap pr-reveal ${
-            sizeIn ? 'is-in' : ''
-          }`}
-        >
-          <div className="pr-sizeguide__head">
-            <div>
-              <h2 className="pr-section-title">
-                Find your size
-              </h2>
+        <section ref={sizeRef} className={`pr-sizeguide pr-wrap pr-reveal ${sizeIn ? 'is-in' : ''}`}>
+          <h2 className="pr-section-title">Find your size</h2>
 
-              <p>
-                Use your wrist measurement as a starting point.
-                The fit can be adjusted with the included strap
-                options.
-              </p>
-            </div>
-
-            <AnyIcon name="ruler" size={28} />
-          </div>
-
-          <div className="pr-sizeguide__table">
-            <div className="pr-sizeguide__row pr-sizeguide__row--head">
-              <span>Case</span>
-              <span>Wrist</span>
-              <span>Fit</span>
-            </div>
-
-            {SIZE_GUIDE.map((item) => (
-              <div
-                className={`pr-sizeguide__row ${
-                  size === item.size ? 'is-selected' : ''
-                }`}
+          <div className="pr-sizeguide__grid">
+            {SIZE_GUIDE.map((item, i) => (
+              <button
+                type="button"
+                className={`pr-sizecard ${size === item.size ? 'is-on' : ''}`}
+                style={{ '--i': i }}
                 key={item.size}
+                onClick={handleSizePick(item.size)}
+                aria-pressed={size === item.size}
               >
                 <strong>{item.size} mm</strong>
-                <span>{item.wrist}</span>
-                <span>{item.note}</span>
-              </div>
+                <span>Wrist {item.wrist}</span>
+                <p>{item.note}</p>
+              </button>
             ))}
           </div>
         </section>
 
         {/* ---------- care ---------- */}
-        <section
-          ref={careRef}
-          className={`pr-care pr-wrap pr-reveal ${
-            careIn ? 'is-in' : ''
-          }`}
-        >
-          <div className="pr-care__grid">
-            <div>
-              <h2 className="pr-section-title">
-                Care guide
-              </h2>
+        <section ref={careRef} className={`pr-care pr-wrap pr-reveal ${careIn ? 'is-in' : ''}`}>
+          <h2 className="pr-section-title">Care guide</h2>
 
-              <p className="pr-care__intro">
-                A little care keeps the finish looking sharp and
-                the movement performing as intended.
-              </p>
-            </div>
-
-            <ul className="pr-care__list">
-              {CARE_TIPS.map((tip, i) => (
-                <li key={tip}>
-                  <span>{String(i + 1).padStart(2, '0')}</span>
-                  <p>{tip}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="pr-care__list">
+            {CARE_TIPS.map((tip) => (
+              <li key={tip}>
+                <Icon name="check" size={16} />
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ---------- reviews ---------- */}
         <section
           ref={reviewRef}
-          className={`pr-reviewsection pr-wrap pr-reveal ${
-            reviewIn ? 'is-in' : ''
-          }`}
+          className={`pr-reviewsection pr-wrap pr-reveal ${reviewIn ? 'is-in' : ''}`}
         >
-          <div className="pr-reviewsection__head">
-            <div>
-              <h2 className="pr-section-title">
-                Customer reviews
-              </h2>
+          <h2 className="pr-section-title">Customer reviews</h2>
 
-              <div className="pr-reviewscore">
+          <div className="pr-reviews-wrap">
+            <div className="pr-rating-summary">
+              <div className="pr-rating-summary__score">
                 <strong>{product.rating}</strong>
-
-                <div>
-                  <Stars value={product.rating} />
-                  <span>
-                    Based on {product.ratings} ratings
-                  </span>
-                </div>
+                <Stars value={product.rating} />
+                <p className="pr-rating-summary__note">Based on {product.ratings} ratings</p>
               </div>
-            </div>
 
-            <button
-              type="button"
-              className="pr-btn pr-btn--line"
-            >
-              Write a review
-            </button>
-          </div>
+              <div className="pr-rating-bars">
+                {ratingBars.map((value, i) => (
+                  <div className="pr-rating-bar" key={i}>
+                    <span>{5 - i} ★</span>
 
-          <div className="pr-reviewsection__body">
-            <div className="pr-ratingbars">
-              {ratingBars.map((value, i) => (
-                <div className="pr-ratingbar" key={i}>
-                  <span>{5 - i}</span>
-                  <div>
-                    <span style={{ width: `${value}%` }} />
+                    <div className="pr-rating-bar__track">
+                      <i
+                        className="pr-rating-bar__fill"
+                        style={{ width: `${reviewIn ? value : 0}%` }}
+                      />
+                    </div>
+
+                    <em>{value}%</em>
                   </div>
-                  <em>{value}%</em>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <button type="button" className="pr-btn pr-btn--line pr-rating-summary__btn">
+                Write a review
+              </button>
             </div>
 
-            <div className="pr-testimonials">
+            <div className="pr-reviews">
               {TESTIMONIALS.slice(0, 3).map((t, i) => (
-                <article
-                  className="pr-testimonial"
-                  key={t.name || i}
-                >
-                  <div className="pr-testimonial__top">
-                    <strong>{t.name}</strong>
+                <article className="pr-review" key={t.name || i}>
+                  <div className="pr-review__head">
+                    <span className="pr-review__avatar">{t.initials}</span>
+
+                    <div className="pr-review__who">
+                      <strong>{t.name}</strong>
+                      <em>Verified purchase · {t.date}</em>
+                    </div>
+
                     <Stars value={t.rating || 5} />
                   </div>
 
@@ -1217,205 +1003,122 @@ function ProductRedesign1({ productId }) {
         </section>
 
         {/* ---------- Q&A ---------- */}
-        <section
-          ref={qnaRef}
-          className={`pr-qna pr-wrap pr-reveal ${
-            qnaIn ? 'is-in' : ''
-          }`}
-        >
-          <h2 className="pr-section-title">
-            Questions, answered
-          </h2>
+        <section ref={qnaRef} className={`pr-qna pr-wrap pr-reveal ${qnaIn ? 'is-in' : ''}`}>
+          <h2 className="pr-section-title">Questions, answered</h2>
 
-          <div className="pr-qna__grid">
+          <div className="pr-qna__list">
             {QNA.map((item) => (
-              <details
-                className="pr-qna__item"
-                key={item.q}
-              >
-                <summary>
+              <details className="pr-qna__item" key={item.q}>
+                <summary className="pr-qna__q">
                   <span>{item.q}</span>
                   <Icon name="plus" size={18} />
                 </summary>
 
-                <p>{item.a}</p>
+                <p className="pr-qna__a">{item.a}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* ---------- frequently bought together ---------- */}
-        <section
-          ref={fbtRef}
-          className={`pr-fbt pr-wrap pr-reveal ${
-            fbtIn ? 'is-in' : ''
-          }`}
-        >
-          <div className="pr-fbt__head">
-            <div>
-              <h2 className="pr-section-title">
-                Frequently bought together
-              </h2>
+        <section ref={fbtRef} className={`pr-fbt pr-wrap pr-reveal ${fbtIn ? 'is-in' : ''}`}>
+          <h2 className="pr-section-title">Frequently bought together</h2>
 
-              <p>
-                Pair your watch with a few useful essentials.
-              </p>
-            </div>
-          </div>
+          <div className="pr-fbt__row">
+            {fbtItems.map((item, idx) => (
+              <div className="pr-fbt__unit" key={item.id}>
+                {idx > 0 && <span className="pr-fbt__plus">+</span>}
 
-          <div className="pr-fbt__grid">
-            <div className="pr-fbt__items">
-              {fbtItems.map((item, idx) => (
-                <div
-                  className={`pr-fbt__item ${
-                    fbtSelected[idx] ? 'is-selected' : ''
-                  }`}
-                  key={item.id}
-                >
-                  <button
-                    type="button"
-                    className="pr-fbt__check"
-                    onClick={handleFbtToggle(idx)}
-                    aria-pressed={!!fbtSelected[idx]}
-                  >
-                    {fbtSelected[idx] && (
-                      <Icon name="check" size={14} />
-                    )}
-                  </button>
-
-                  <SmartImage
-                    className="pr-fbt__img"
-                    src={img(item.image, 300)}
-                    alt={item.name}
+                <label className="pr-fbt__item">
+                  <input
+                    type="checkbox"
+                    checked={!!fbtSelected[idx]}
+                    onChange={handleFbtToggle(idx)}
                   />
 
-                  <div className="pr-fbt__copy">
-                    <strong>{item.name}</strong>
-                    <span>
-                      ₹{formatPrice(item.price)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  <SmartImage className="pr-fbt__img" src={img(item.image, 300)} alt={item.name} />
 
-            <div className="pr-fbt__summary">
-              <span>
-                {fbtCount} item{fbtCount === 1 ? '' : 's'} selected
-              </span>
+                  <span>{item.name}</span>
+                  <strong>₹{formatPrice(item.price)}</strong>
+                </label>
+              </div>
+            ))}
+          </div>
 
-              <strong>
-                ₹{formatPrice(fbtTotal)}
-              </strong>
+          <div className="pr-fbt__summary">
+            <span>
+              {fbtCount} item{fbtCount === 1 ? '' : 's'} selected
+            </span>
 
-              <button
-                type="button"
-                className="pr-btn pr-btn--signal"
-                onClick={addFbtToCart}
-                disabled={!fbtCount}
-              >
-                <Icon name="bag" size={16} />
-                Add selected
-              </button>
-            </div>
+            <strong>₹{formatPrice(fbtTotal)}</strong>
+
+            <button
+              type="button"
+              className="pr-btn pr-btn--signal"
+              onClick={addFbtToCart}
+              disabled={!fbtCount}
+            >
+              <Icon name="bag" size={16} />
+              Add selected
+            </button>
           </div>
         </section>
 
         {/* ---------- related ---------- */}
         <section
           ref={relatedRef}
-          className={`pr-related pr-wrap pr-reveal ${
-            relatedIn ? 'is-in' : ''
-          }`}
+          className={`pr-related pr-wrap pr-reveal ${relatedIn ? 'is-in' : ''}`}
         >
-          <div className="pr-related__head">
-            <div>
-              <h2 className="pr-section-title">
-                You may also like
-              </h2>
-
-              <p>
-                More pieces from the same collection.
-              </p>
-            </div>
-          </div>
+          <h2 className="pr-section-title">You may also like</h2>
 
           <div className="pr-related__grid">
-            {related.map((p) => (
+            {related.map((p, i) => (
               <article
-                className="pr-relatedcard"
+                className="pr-card"
+                style={{ '--i': i }}
                 key={p.id}
                 onClick={() => goToProductPage(p.id)}
               >
-                <div className="pr-relatedcard__media">
-                  <SmartImage
-                    className="pr-relatedcard__img"
-                    src={img(p.image, 500)}
-                    alt={p.name}
-                  />
+                <div className="pr-card__media">
+                  <SmartImage className="pr-card__img" src={img(p.image, 600)} alt={p.name} />
+
+                  {p.originalPrice > p.price && (
+                    <span className="pr-card__badge">
+                      {Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% off
+                    </span>
+                  )}
 
                   <button
                     type="button"
-                    className={`pr-relatedcard__wish ${
-                      cardWish[p.id] ? 'is-on' : ''
-                    }`}
+                    className={`pr-wish ${cardWish[p.id] ? 'is-on' : ''}`}
                     onClick={handleCardWishClick(p.id)}
-                    aria-label={
-                      cardWish[p.id]
-                        ? 'Remove from wishlist'
-                        : 'Add to wishlist'
-                    }
+                    aria-label={cardWish[p.id] ? 'Remove from wishlist' : 'Add to wishlist'}
                     aria-pressed={!!cardWish[p.id]}
                   >
-                    <Icon
-                      name="heart"
-                      size={18}
-                    />
+                    <Icon name="heart" size={18} />
                   </button>
-
-                  {p.originalPrice > p.price && (
-                    <span className="pr-relatedcard__badge">
-                      {Math.round(
-                        ((p.originalPrice - p.price) /
-                          p.originalPrice) *
-                          100
-                      )}
-                      % off
-                    </span>
-                  )}
                 </div>
 
-                <div className="pr-relatedcard__body">
-                  <span className="pr-relatedcard__type">
-                    {p.type === 'strap'
-                      ? 'Strap'
-                      : p.type === 'accessory'
-                      ? 'Accessory'
-                      : 'Watch'}
+                <div className="pr-card__body">
+                  <span>
+                    {p.type === 'strap' ? 'Strap' : p.type === 'accessory' ? 'Accessory' : 'Watch'}
                   </span>
 
-                  <h3>{p.name}</h3>
+                  <strong>{p.name}</strong>
 
-                  <div className="pr-relatedcard__rating">
+                  <div className="pr-rating">
                     <Stars value={p.rating} />
                     <span>{p.rating}</span>
                   </div>
 
-                  <div className="pr-relatedcard__price">
-                    <strong>
-                      ₹{formatPrice(p.price)}
-                    </strong>
-
-                    {p.originalPrice > p.price && (
-                      <s>
-                        ₹{formatPrice(p.originalPrice)}
-                      </s>
-                    )}
+                  <div className="pr-price">
+                    <strong>₹{formatPrice(p.price)}</strong>
+                    {p.originalPrice > p.price && <s>₹{formatPrice(p.originalPrice)}</s>}
                   </div>
 
                   <button
                     type="button"
-                    className={`pr-btn pr-btn--ink pr-btn--sm ${
+                    className={`pr-btn pr-btn--ink pr-btn--sm pr-btn--block ${
                       cardAdded[p.id] ? 'is-added' : ''
                     }`}
                     onClick={handleRelatedAddToCart(p)}
@@ -1437,68 +1140,162 @@ function ProductRedesign1({ productId }) {
             ))}
           </div>
         </section>
-      </main>
 
-      {/* ---------- sticky mini buy bar ---------- */}
-      <div
-        className={`pr-mini ${
-          miniVisible ? 'is-visible' : ''
-        }`}
-      >
-        <div className="pr-mini__inner pr-wrap">
-          <div className="pr-mini__product">
-            <SmartImage
-              className="pr-mini__img"
-              src={img(product.image, 120)}
-              alt={product.name}
-            />
+        {/* ---------- pay later banner ---------- */}
+        <section className="pr-paybanner pr-wrap" aria-label="Pay later">
+          <div className="pr-paybanner__card">
+            <div className="pr-paybanner__copy">
+              <h2>
+                Shop today, pay later
+                <br />
+                at no extra cost
+              </h2>
 
-            <div>
-              <strong>{product.name}</strong>
-              <span>
-                ₹{formatPrice(unitPrice)}
+              <button
+                type="button"
+                className="pr-paybanner__cta"
+                onClick={handleFooterLink('Pay Later')}
+              >
+                Activate now <Icon name="right" size={20} />
+              </button>
+            </div>
+
+            <div className="pr-paybanner__art" aria-hidden="true">
+              <span className="pr-paybanner__dial">
+                <AnyIcon name="clock" size={34} />
+              </span>
+
+              <span className="pr-paybanner__brand">
+                amihive
+                <b>PAY LATER</b>
               </span>
             </div>
           </div>
+        </section>
+      </main>
 
-          <div className="pr-mini__actions">
-            <button
-              type="button"
-              className={`pr-btn pr-btn--signal ${
-                addedMain ? 'is-added' : ''
-              }`}
-              onClick={addToCart}
-            >
-              {addedMain ? (
-                <>
-                  <Icon name="check" size={17} />
-                  Added to Cart (x{qty})
-                </>
-              ) : (
-                <>
-                  <Icon name="bag" size={16} />
-                  Add to cart
-                </>
-              )}
-            </button>
+      {/* ---------- footer ---------- */}
+      <footer className="pr-foot">
+        <div className="pr-wrap pr-foot__grid">
+          <div className="pr-foot__col">
+            <h4>About</h4>
+            {FOOT_ABOUT.map((label) => (
+              <button
+                type="button"
+                className="pr-foot__link"
+                key={label}
+                onClick={handleFooterLink(label)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="pr-foot__col">
+            <h4>Help</h4>
+            {FOOT_HELP.map((label) => (
+              <button
+                type="button"
+                className="pr-foot__link"
+                key={label}
+                onClick={handleFooterLink(label)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="pr-foot__col">
+            <h4>Consumer policy</h4>
+            {FOOT_POLICY.map((label) => (
+              <button
+                type="button"
+                className="pr-foot__link"
+                key={label}
+                onClick={handleFooterLink(label)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="pr-foot__col pr-foot__col--divider">
+            <h4>Mail us</h4>
+
+            <address className="pr-foot__addr">
+              <b>{COMPANY.name}</b>
+              {COMPANY.mailLines.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+              <span>{COMPANY.email}</span>
+            </address>
+
+            <h4>Social</h4>
+
+            <div className="pr-foot__social">
+              {FOOT_SOCIAL.map((s) => (
+                <button
+                  type="button"
+                  key={s.icon}
+                  aria-label={s.label}
+                  onClick={handleFooterLink(s.label)}
+                >
+                  <AnyIcon name={s.icon} size={18} />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pr-foot__col">
+            <h4>Registered office address</h4>
+
+            <address className="pr-foot__addr">
+              <b>{COMPANY.name}</b>
+              {COMPANY.officeLines.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+              <span>CIN : {COMPANY.cin}</span>
+              <span>Telephone: {COMPANY.phone}</span>
+            </address>
           </div>
         </div>
-      </div>
+
+        <div className="pr-wrap pr-foot__bar">
+          <div className="pr-foot__barlinks">
+            {FOOT_BAR.map((label) => (
+              <button
+                type="button"
+                key={label}
+                className="pr-foot__link"
+                onClick={handleFooterLink(label)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <span className="pr-foot__copy">© {new Date().getFullYear()} Amihive.com</span>
+
+          <div className="pr-foot__pay">
+            {PAYMENTS.map((p) => (
+              <span key={p}>{p}</span>
+            ))}
+          </div>
+        </div>
+      </footer>
 
       {/* ---------- toast ---------- */}
-      <div
-        className={`pr-toast ${toast ? 'is-visible' : ''}`}
-        role="status"
-        aria-live="polite"
-      >
-        <Icon name="check" size={17} />
-        <span>{toast}</span>
-      </div>
+      {toast && (
+        <div className="pr-toast" role="status" aria-live="polite" key={toast}>
+          <Icon name="check" size={17} />
+          <span>{toast}</span>
+        </div>
+      )}
 
       {/* ---------- back to top ---------- */}
       <button
         type="button"
-        className={`pr-top ${showTop ? 'is-visible' : ''}`}
+        className={`pr-totop ${showTop ? 'is-in' : ''}`}
         onClick={scrollToTop}
         aria-label="Back to top"
       >
