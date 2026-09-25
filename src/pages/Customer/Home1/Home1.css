@@ -1,3 +1,10 @@
+/* Home1.css — FULL FILE with all fixes:
+   1. .ah-root forced to width:100% (prevents shrink-to-fit collapse)
+   2. .ah-header__row nav column changed from plain "1fr" to "minmax(0, 1fr)"
+      in BOTH the base rule and the @media(max-width:1080px) override
+      — this was the actual cause of the page-wide horizontal overflow
+   3. .ah-footer__grid changed from plain fr values to minmax(0, …fr)
+      in the base rule and both media-query overrides (same bug) */
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap');
 
 /* ==================================================================
@@ -6,6 +13,10 @@
    padding, gaps and heights stay consistent in all sections.
    ================================================================== */
 .ah-root {
+  /* FIX 1: force full-width, prevent shrink-to-fit collapse on mobile */
+  width: 100%;
+  max-width: 100%;
+
   /* colour */
   --ink: #0f1a1d;
   --petrol: #0b3a40;
@@ -357,7 +368,9 @@
 
 .ah-header__row {
   display: grid;
-  grid-template-columns: auto 1fr minmax(200px, 280px) auto;
+  /* FIX 2: minmax(0, 1fr) so the nav column can shrink instead of
+     forcing the whole page wider than the viewport */
+  grid-template-columns: auto minmax(0, 1fr) minmax(200px, 280px) auto;
   grid-template-areas: 'logo nav search actions';
   align-items: center;
   column-gap: clamp(16px, 2.2vw, 28px);
@@ -395,6 +408,8 @@
   display: flex;
   justify-content: center;
   gap: clamp(16px, 2.4vw, 34px);
+  min-width: 0; /* FIX 2 (support): lets the nav shrink inside its grid track */
+  overflow: hidden; /* clips gracefully instead of overflowing the page if space is very tight */
 }
 
 .ah-nav a {
@@ -403,6 +418,7 @@
   font-size: 14.5px;
   font-weight: 500;
   color: #2b3b3f;
+  white-space: nowrap;
 }
 
 .ah-nav a::after {
@@ -424,6 +440,7 @@
 
 .ah-search {
   grid-area: search;
+  width: 100%;
   display: flex;
   align-items: center;
   height: 42px;
@@ -1768,7 +1785,8 @@
 
 .ah-footer__grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  /* FIX 3: minmax(0, …fr) so the footer cannot force the page wider */
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 32px;
   padding-top: clamp(44px, 6vw, 72px);
   padding-bottom: 36px;
@@ -1793,6 +1811,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
 }
 
 .ah-footer__col h4 {
@@ -1882,7 +1901,8 @@
   }
 
   .ah-header__row {
-    grid-template-columns: auto 1fr auto;
+    /* FIX 2 (mobile override): minmax(0, 1fr) instead of plain 1fr */
+    grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
       'burger logo actions'
       'search search search';
@@ -1940,7 +1960,8 @@
   }
 
   .ah-footer__grid {
-    grid-template-columns: 1fr 1fr;
+    /* FIX 3 (mobile override) */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
@@ -2127,7 +2148,8 @@
   }
 
   .ah-footer__grid {
-    grid-template-columns: 1fr 1fr;
+    /* FIX 3 (mobile override) */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 28px 20px;
   }
 

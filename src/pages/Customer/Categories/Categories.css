@@ -1,3 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
+
+/* ==================================================================
+   THEME OVERRIDE — Atelier / friend's template
+   (Deep Petrol / Champagne / Porcelain) — scoped to this page only.
+   Combined ".sx-root.cx-root" selector guarantees this wins over the
+   shared tokens in SiteChrome.css regardless of CSS import order.
+   ================================================================== */
+.sx-root.cx-root {
+  --petrol: #123B3A;
+  --petrol-2: #0D2D2C;
+  --signal: #C7A66A;
+  --signal-dark: #B28E52;
+  --ink: #171B1B;
+  --muted: #707776;
+  --paper: #F7F6F2;
+  --mist: #DDE9E4;
+  --line: #E7E1D2;
+  --steel: #D7CFBB;
+  --ok: #34745F;
+  --danger: #C95F50;
+  --star: #C7A66A;
+  --font-display: 'Playfair Display', 'Instrument Sans', serif;
+}
+
+/* buttons: rounded-rect + small-caps, matching the atelier template */
+.cx-root .sx-btn {
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.cx-root .sx-btn--sm {
+  font-size: 12px;
+}
+
+/* FIX: Premium/Champagne CTA uses dark ink text, not white
+   (matches design.md "Premium CTA" rule + friend's reference screenshot) */
+.cx-root .sx-btn--signal {
+  color: var(--ink);
+  box-shadow: 0 8px 20px -12px rgba(199, 166, 106, 0.55);
+}
+
+.cx-root .sx-btn--signal:hover:not(:disabled) {
+  background: var(--signal-dark);
+  color: var(--ink);
+}
+
+.cx-card__btn.sx-btn--ink {
+  background: var(--ok);
+  color: #fff;
+}
+
+.cx-card__btn.sx-btn--ink:hover:not(:disabled) {
+  background: #2C604F;
+}
+
+/* ==================================================================
+   TRUST TICKER
+   ================================================================== */
+.sx-ticker {
+  overflow: hidden;
+  background: var(--petrol);
+}
+
+.sx-ticker__track {
+  display: flex;
+  gap: 36px;
+  width: max-content;
+  white-space: nowrap;
+  padding: 9px var(--gutter);
+  animation: sx-ticker-scroll 26s linear infinite;
+}
+
+.sx-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.sx-ticker__item svg {
+  color: var(--signal);
+}
+
+@keyframes sx-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* ==================================================================
    HERO
    ================================================================== */
@@ -23,7 +123,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(90deg, rgba(6, 34, 39, 0.92) 0%, rgba(6, 34, 39, 0.72) 42%, rgba(6, 34, 39, 0.1) 100%);
+  background: linear-gradient(90deg, rgba(18, 59, 58, 0.92) 0%, rgba(18, 59, 58, 0.72) 42%, rgba(18, 59, 58, 0.1) 100%);
 }
 
 .cx-hero__copy {
@@ -38,12 +138,24 @@
 }
 
 .cx-hero__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 14px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cx-hero__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
 }
 
 .cx-hero h1 {
@@ -51,8 +163,8 @@
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(30px, 4.4vw, 56px);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 .cx-hero p {
@@ -69,7 +181,7 @@
   height: 48px;
   margin-top: 22px;
   padding-left: 18px;
-  border-radius: 999px;
+  border-radius: 10px;
   background: #fff;
   color: var(--ink);
 }
@@ -89,6 +201,29 @@
   width: 48px;
   height: 100%;
   color: var(--petrol);
+}
+
+/* ==================================================================
+   BRAND STRIP
+   ================================================================== */
+.cx-brands {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  padding-block: 22px;
+  margin-top: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cx-brands span {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 /* ==================================================================
@@ -200,7 +335,7 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(0deg, rgba(6, 34, 39, 0.82) 0%, rgba(6, 34, 39, 0.05) 62%);
+  background: linear-gradient(0deg, rgba(18, 59, 58, 0.82) 0%, rgba(18, 59, 58, 0.05) 62%);
 }
 
 .cx-coll__label {
@@ -246,6 +381,49 @@
 }
 
 /* ==================================================================
+   CRAFT / QUALITY FEATURES
+   ================================================================== */
+.cx-craft {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: var(--section-y);
+}
+
+.cx-craft__card {
+  padding: 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cx-craft__card strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cx-craft__card em {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal-dark);
+}
+
+.cx-craft__card p {
+  margin-top: 10px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ==================================================================
    LISTING LAYOUT
    ================================================================== */
 .cx-listing {
@@ -264,7 +442,7 @@
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
   scrollbar-width: thin;
 }
@@ -331,7 +509,7 @@
   width: 16px;
   height: 16px;
   margin: 0;
-  accent-color: var(--signal);
+  accent-color: var(--signal-dark);
 }
 
 .cx-opt span {
@@ -384,7 +562,7 @@
   font-family: var(--font-display);
   font-size: clamp(22px, 2.6vw, 30px);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .cx-toolbar__count {
@@ -410,7 +588,7 @@
   height: 42px;
   padding: 0 6px 0 16px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 10px;
   background: #fff;
   font-size: 13.5px;
   color: var(--muted);
@@ -431,7 +609,7 @@
   display: inline-flex;
   padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 10px;
   background: #fff;
 }
 
@@ -440,7 +618,7 @@
   place-items: center;
   width: 36px;
   height: 34px;
-  border-radius: 999px;
+  border-radius: 8px;
   color: var(--muted);
   transition: background 0.2s ease, color 0.2s ease;
 }
@@ -467,7 +645,7 @@
   padding: 0 12px 0 14px;
   border: 1px solid var(--petrol-2);
   border-radius: 999px;
-  background: rgba(18, 82, 90, 0.07);
+  background: var(--mist);
   font-size: 13px;
   font-weight: 500;
   color: var(--petrol);
@@ -475,9 +653,9 @@
 }
 
 .cx-chip:hover {
-  background: rgba(242, 84, 45, 0.1);
-  border-color: var(--signal);
-  color: var(--signal-dark);
+  background: rgba(201, 95, 80, 0.1);
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 /* ==================================================================
@@ -509,7 +687,7 @@
 
 .cx-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 18px 32px -22px rgba(11, 58, 64, 0.35);
+  box-shadow: 0 18px 32px -22px rgba(18, 59, 58, 0.35);
 }
 
 .cx-card__media {
@@ -536,20 +714,43 @@
   left: 12px;
   z-index: 2;
   padding: 5px 11px;
-  border-radius: 999px;
+  border-radius: 6px;
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .cx-card__badge {
   top: 12px;
-  background: var(--signal);
+  background: var(--danger);
 }
 
 .cx-card__new {
   top: 44px;
   background: var(--petrol);
+}
+
+/* vary badge colouring across the grid, matching the atelier reference */
+.cx-grid .cx-card:nth-child(4n+1) .cx-card__badge {
+  background: var(--signal);
+  color: var(--ink);
+}
+
+.cx-grid .cx-card:nth-child(4n+2) .cx-card__badge {
+  background: var(--mist);
+  color: var(--petrol);
+}
+
+.cx-grid .cx-card:nth-child(4n+3) .cx-card__badge {
+  background: var(--petrol);
+  color: #fff;
+}
+
+.cx-grid .cx-card:nth-child(4n+4) .cx-card__badge {
+  background: #F2E9D8;
+  color: var(--ink);
 }
 
 .cx-wish {
@@ -572,7 +773,7 @@
 }
 
 .cx-wish.is-on {
-  color: var(--signal);
+  color: var(--signal-dark);
   animation: sx-bump 0.45s var(--ease);
 }
 
@@ -620,13 +821,15 @@
 .cx-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: var(--ok);
-  color: #fff;
-  font-size: 12px;
+  gap: 4px;
+  padding: 0;
+  color: var(--ink);
+  font-size: 12.5px;
   font-weight: 700;
+}
+
+.cx-pill svg {
+  color: var(--star);
 }
 
 .cx-card__points {
@@ -663,14 +866,14 @@
 
 .cx-price s {
   font-size: 13px;
-  color: #7d8a8e;
+  color: var(--muted);
 }
 
 .cx-price em {
   font-style: normal;
   font-size: 13px;
   font-weight: 700;
-  color: var(--ok);
+  color: var(--danger);
 }
 
 .cx-card__ship {
@@ -738,7 +941,7 @@
   gap: 8px;
   padding: 56px 20px;
   border: 1px dashed var(--steel);
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
   text-align: center;
   color: var(--muted);
@@ -771,7 +974,7 @@
   gap: 14px;
   padding: 18px 20px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 12px;
   background: #fff;
 }
 
@@ -813,10 +1016,12 @@
   height: 38px;
   padding: 0 18px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 8px;
   background: #fff;
-  font-size: 13.5px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   transition: border-color 0.2s ease, color 0.2s ease, transform 0.25s var(--ease);
 }
 
@@ -930,6 +1135,10 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .cx-craft {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .cx-benefits {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -954,8 +1163,21 @@
 }
 
 @media (max-width: 720px) {
+  .sx-ticker__track {
+    animation-duration: 20s;
+  }
+
+  .cx-brands {
+    justify-content: flex-start;
+    gap: 14px 22px;
+  }
+
+  .cx-brands span {
+    font-size: 12px;
+  }
+
   .cx-hero__shade {
-    background: linear-gradient(0deg, rgba(6, 34, 39, 0.92) 0%, rgba(6, 34, 39, 0.6) 60%, rgba(6, 34, 39, 0.3) 100%);
+    background: linear-gradient(0deg, rgba(18, 59, 58, 0.92) 0%, rgba(18, 59, 58, 0.6) 60%, rgba(18, 59, 58, 0.3) 100%);
   }
 
   .cx-hero__copy {
@@ -1026,6 +1248,11 @@
 
   .cx-coll__label em {
     display: none;
+  }
+
+  .cx-craft {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .cx-benefits {

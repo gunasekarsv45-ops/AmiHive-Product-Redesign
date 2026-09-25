@@ -55,10 +55,61 @@ const POINTS = {
 const POPULAR = ['Automatic', 'Chronograph', 'Blue dial', 'Steel', 'Leather', 'Field watch', 'Travel case', 'Gift set', 'Jubilee'];
 
 const BENEFITS = [
-  { icon: 'truck', title: 'Insured shipping', text: 'Free on every order' },
-  { icon: 'shield', title: 'Certified original', text: 'Every piece verified' },
-  { icon: 'clock', title: '2 year warranty', text: 'On all movements' },
-  { icon: 'returns', title: '7 day returns', text: 'No questions asked' },
+  { icon: 'truck', title: 'Secure armored logistics', text: 'Insured dispatch within 48 hours' },
+  { icon: 'shield', title: 'Authenticity certificate', text: 'Maker stamped serial ledger' },
+  { icon: 'clock', title: '7-day studio returns', text: 'No friction inspection guarantee' },
+  { icon: 'percent', title: 'Fair guild revenue', text: 'Direct profit sharing with artisans' },
+];
+
+/* ---------- new: atelier-style trust ticker (this page only) ---------- */
+const TICKER = [
+  { icon: 'shield', text: 'Atelier certified' },
+  { icon: 'clock', text: '48h express dispatch' },
+  { icon: 'lock', text: 'Secure payments' },
+  { icon: 'truck', text: 'Free delivery above ₹1,999' },
+  { icon: 'returns', text: 'Easy 7-day returns' },
+  { icon: 'check', text: 'Verified authentic craft' },
+];
+
+function TopTicker() {
+  return (
+    <div className="sx-ticker" aria-hidden="true">
+      <div className="sx-ticker__track">
+        {[...TICKER, ...TICKER].map((t, i) => (
+          <span className="sx-ticker__item" key={i}>
+            <Ico name={t.icon} size={13} /> {t.text}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- new: brand strip under the hero ---------- */
+const BRANDS = ['Casio', 'Citizen', 'Rolex', 'Omega', 'Tudor', 'Tag Heuer', 'Seiko', 'Amihive'];
+
+/* ---------- new: craft / quality feature cards ---------- */
+const CRAFT = [
+  {
+    title: 'Sapphire crystal',
+    eyebrow: 'Mohs hardness 9',
+    text: 'Every dial is shielded by a scratch-resistant sapphire crystal, engineered to withstand decades of daily wear.',
+  },
+  {
+    title: 'Full-grain leather',
+    eyebrow: 'Uncorrected top hide',
+    text: 'Straps are cut from natural, full-grain leather that develops a deep, lustrous patina with age.',
+  },
+  {
+    title: 'Automatic movement',
+    eyebrow: 'Chronometer tested',
+    text: 'Self-winding calibres are regulated and timed before every piece leaves the workshop.',
+  },
+  {
+    title: 'Small-batch runs',
+    eyebrow: 'Numbered editions',
+    text: 'Limited production keeps every release genuinely scarce and individually accounted for.',
+  },
 ];
 
 const pct = (p) =>
@@ -426,7 +477,7 @@ function Categories() {
 
           <div className="cx-card__rate">
             <span className="cx-pill">
-              {p.rating} <Ico name="star" size={11} filled />
+              <Ico name="star" size={12} filled /> {p.rating}
             </span>
             <span>({p.ratings} ratings)</span>
           </div>
@@ -460,7 +511,7 @@ function Categories() {
               </>
             ) : (
               <>
-                <Ico name="bag" size={15} /> Add to cart
+                <Ico name="bag" size={15} /> Add to bag
               </>
             )}
           </button>
@@ -471,6 +522,8 @@ function Categories() {
 
   return (
     <div className="sx-root cx-root">
+      <TopTicker />
+
       <SiteHeader active="categories" wishCount={wishCount} cartCount={cartCount} onToast={showToast} />
 
       <nav className="sx-crumb sx-wrap" aria-label="Breadcrumb">
@@ -489,7 +542,9 @@ function Categories() {
             <div className="cx-hero__shade" />
 
             <div className="cx-hero__copy">
-              <span className="cx-hero__tag">Shop by category</span>
+              <span className="cx-hero__tag">
+                <i className="cx-hero__dot" /> Shop by category
+              </span>
               <h1>Every piece, one place.</h1>
               <p>Automatic watches, straps and the details that finish them. Filter, compare and pick yours.</p>
 
@@ -508,7 +563,14 @@ function Categories() {
           </div>
         </section>
 
-        {/* ---------- category circles (Flipkart style) ---------- */}
+        {/* ---------- brand strip ---------- */}
+        <section className="sx-wrap cx-brands" aria-label="Movements we carry">
+          {BRANDS.map((b) => (
+            <span key={b}>{b}</span>
+          ))}
+        </section>
+
+        {/* ---------- category circles ---------- */}
         <section className="sx-wrap cx-quicksec" aria-label="Quick categories">
           <div className="cx-quick">
             {QUICK.map((q) => (
@@ -548,6 +610,17 @@ function Categories() {
               </button>
             ))}
           </div>
+        </section>
+
+        {/* ---------- craft / quality features ---------- */}
+        <section className="sx-wrap cx-craft" aria-label="Craft standards">
+          {CRAFT.map((c) => (
+            <div className="cx-craft__card" key={c.title}>
+              <strong>{c.title}</strong>
+              <em>{c.eyebrow}</em>
+              <p>{c.text}</p>
+            </div>
+          ))}
         </section>
 
         {/* ---------- listing ---------- */}

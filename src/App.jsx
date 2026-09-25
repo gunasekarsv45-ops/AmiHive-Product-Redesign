@@ -3,6 +3,13 @@ import Home1 from './pages/Customer/Home1/Home1';
 import ProductRedesign1 from './pages/Customer/ProductRedesign1/ProductRedesign1';
 import Categories from './pages/Customer/Categories/Categories';
 import Account from './pages/Customer/Account/Account';
+import HelpFAQ from './pages/Customer/HelpFAQ/HelpFAQ';
+import ContactUs from './pages/Customer/ContactUs/ContactUs';
+import AboutUs from './pages/Customer/AboutUs/AboutUs';
+import PrivacyPolicy from './pages/Customer/PrivacyPolicy/PrivacyPolicy';
+import NotFound from './pages/Customer/NotFound/NotFound';
+import TermsConditions from './pages/Customer/TermsConditions/TermsConditions';
+import ReturnRefundPolicy from './pages/Customer/ReturnRefundPolicy/ReturnRefundPolicy';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -47,6 +54,19 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Simple, exact-match routes. Anything not in this list falls through to 'notfound'.
+const SIMPLE_ROUTES = {
+  '/': 'home',
+  '/categories': 'categories',
+  '/account': 'account',
+  '/help': 'help',
+  '/contact': 'contact',
+  '/about': 'about',
+  '/privacy': 'privacy',
+  '/terms': 'terms',
+  '/returns': 'returns',
+};
+
 function getRoute() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   const params = new URLSearchParams(window.location.search);
@@ -59,15 +79,13 @@ function getRoute() {
     };
   }
 
-  if (path === '/categories') {
-    return { page: 'categories', productId: null, search: window.location.search };
-  }
+  const page = SIMPLE_ROUTES[path];
 
-  if (path === '/account') {
-    return { page: 'account', productId: null, search: window.location.search };
-  }
-
-  return { page: 'home', productId: null, search: '' };
+  return {
+    page: page || 'notfound',
+    productId: null,
+    search: window.location.search,
+  };
 }
 
 function App() {
@@ -102,7 +120,15 @@ function App() {
 
       {route.page === 'account' && <Account key={route.search} />}
 
+      {route.page === 'help' && <HelpFAQ />}
+      {route.page === 'contact' && <ContactUs />}
+      {route.page === 'about' && <AboutUs />}
+      {route.page === 'privacy' && <PrivacyPolicy />}
+      {route.page === 'terms' && <TermsConditions />}
+      {route.page === 'returns' && <ReturnRefundPolicy />}
+
       {route.page === 'home' && <Home1 />}
+      {route.page === 'notfound' && <NotFound />}
     </ErrorBoundary>
   );
 }

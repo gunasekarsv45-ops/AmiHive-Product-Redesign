@@ -37,6 +37,8 @@ const PATHS = {
   logout: 'M10 5H5v14h5M15 8l4 4-4 4M19 12H9',
   help: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01',
   mail: 'M3 6h18v12H3zM3 7l9 7 9-7',
+  phone: 'M5 4h3l2 5-2 2c1 3 3 5 6 6l2-2 5 2v3c0 1-1 2-2 2C10.5 22 2 13.5 2 6c0-1 1-2 2-2z',
+  chat: 'M4 5h16v11H8l-4 4V5z',
   percent: 'M19 5 5 19M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM16.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
   up: 'M12 19V5M5 12l7-7 7 7',
   facebook: 'M15 3h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z',
@@ -108,7 +110,34 @@ export function useToast() {
 }
 
 /* ------------------------------------------------------------------
-   HEADER  (3-line menu | logo | wishlist, cart, profile)
+   TOP TICKER — shared across every page (was duplicated per page)
+------------------------------------------------------------------- */
+const TICKER = [
+  { icon: 'lock', text: 'Secure payments' },
+  { icon: 'truck', text: 'Free delivery above ₹1,999' },
+  { icon: 'returns', text: 'Easy 7-day returns' },
+  { icon: 'check', text: 'Verified authentic craft' },
+  { icon: 'shield', text: 'Atelier certified' },
+  { icon: 'clock', text: '48h express dispatch' },
+];
+
+export function TopTicker() {
+  return (
+    <div className="sx-ticker" aria-hidden="true">
+      <div className="sx-ticker__track">
+        {[...TICKER, ...TICKER].map((t, i) => (
+          <span className="sx-ticker__item" key={i}>
+            <Ico name={t.icon} size={13} /> {t.text}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------
+   HEADER  (dark petrol bar: hamburger + logo | search, wishlist,
+   cart, profile — matches the reference screenshot exactly)
 ------------------------------------------------------------------- */
 const MENU = [
   { key: 'home', label: 'Home', path: '/' },
@@ -117,6 +146,9 @@ const MENU = [
   { key: 'build', label: 'Build your own', path: '/', hash: '#build' },
   { key: 'featured', label: 'Bestsellers', path: '/', hash: '#featured' },
   { key: 'reviews', label: 'Reviews', path: '/', hash: '#reviews' },
+  { key: 'help', label: 'Help & FAQ', path: '/help' },
+  { key: 'contact', label: 'Contact Us', path: '/contact' },
+  { key: 'about', label: 'About Us', path: '/about' },
   { key: 'account', label: 'My account', path: '/account' },
 ];
 
@@ -152,39 +184,42 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
             >
               <Ico name={open ? 'close' : 'menu'} size={20} />
             </button>
-          </div>
 
-          <button type="button" className="sx-logo" onClick={() => navigate('/')}>
-            amihive<i className="sx-logo__dot" />
-          </button>
+            <button type="button" className="sx-logo" onClick={() => navigate('/')}>
+              amihive<i className="sx-logo__dot" />
+            </button>
+          </div>
 
           <div className="sx-header__actions">
             <button
               type="button"
               className="sx-iconbtn"
-              aria-label={`Wishlist, ${wishCount} saved`}
-              onClick={() => navigate('/account?tab=wishlist')}
+              aria-label="Search"
+              onClick={() => navigate('/categories')}
             >
-              <Ico name="heart" size={20} />
-              {wishCount > 0 && (
-                <span className="sx-count" key={wishCount}>
-                  {wishCount}
-                </span>
-              )}
+              <Ico name="search" size={19} />
             </button>
 
             <button
               type="button"
-              className="sx-iconbtn"
+              className="sx-labelbtn"
+              aria-label={`Wishlist, ${wishCount} saved`}
+              onClick={() => navigate('/account?tab=wishlist')}
+            >
+              <Ico name="heart" size={18} />
+              <span className="sx-labelbtn__text">Wishlist</span>
+              <span className="sx-labelbtn__badge">{wishCount}</span>
+            </button>
+
+            <button
+              type="button"
+              className="sx-labelbtn"
               aria-label={`Cart, ${cartCount} items`}
               onClick={() => onToast && onToast('Cart page coming soon.')}
             >
-              <Ico name="bag" size={20} />
-              {cartCount > 0 && (
-                <span className="sx-count" key={cartCount}>
-                  {cartCount}
-                </span>
-              )}
+              <Ico name="bag" size={18} />
+              <span className="sx-labelbtn__text">Cart</span>
+              <span className="sx-labelbtn__badge">{cartCount}</span>
             </button>
 
             <button
@@ -193,7 +228,7 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
               aria-label="Profile"
               onClick={() => navigate('/account')}
             >
-              <Ico name="user" size={20} />
+              <Ico name="user" size={19} />
             </button>
           </div>
         </div>
@@ -222,40 +257,59 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
 }
 
 /* ------------------------------------------------------------------
-   FOOTER  (pay-later banner + Flipkart-style policy footer)
-   Edit COMPANY with your real details.
+   FOOTER  — matches the "AMIHIVE / Shop Curations / Discover Atelier
+   / Customer Care / Integrity & Gazette" reference screenshot.
 ------------------------------------------------------------------- */
-const COMPANY = {
-  name: 'Amihive Timepieces Private Limited',
-  mailLines: ['[Building / Street],', '[Area, City – PIN code],', '[State], India'],
-  officeLines: ['[Building / Street],', '[Area, City – PIN code],', '[State], India'],
-  cin: '[CIN number]',
-  phone: '[Support phone number]',
-  email: 'support@amihive.com',
-};
+const FOOT_CURATIONS = [
+  'Mechanical Timepieces',
+  'Handmade Ceramics',
+  'Full-Grain Leather goods',
+  'Architectural Objects',
+  'Limited Production Runs',
+  'Heirloom Keepsakes',
+];
 
-const FOOT_ABOUT = ['Contact Us', 'About Us', 'Careers', 'Amihive Stories', 'Press', 'Corporate Information'];
-const FOOT_HELP = ['Payments', 'Shipping', 'Cancellation & Returns', 'Warranty Claims', 'FAQ'];
-const FOOT_POLICY = [
-  'Cancellation & Returns',
-  'Terms Of Use',
-  'Security',
-  'Privacy',
-  'Sitemap',
-  'Grievance Redressal',
-  'Warranty Policy',
+const FOOT_ATELIER = [
+  'Artisan Profiles',
+  'Master Workshop Coordinates',
+  'Craftsmanship Stories',
+  'Materials & Provenance',
+  'Commission Bespoke',
+  'Sustainability Report',
 ];
-const FOOT_SOCIAL = [
-  { icon: 'facebook', label: 'Facebook' },
-  { icon: 'x', label: 'X' },
-  { icon: 'youtube', label: 'YouTube' },
-  { icon: 'instagram', label: 'Instagram' },
+
+const FOOT_CARE = [
+  { label: 'Order Tracking', action: 'soon' },
+  { label: 'Shipping & Logistics', action: 'soon' },
+  { label: '7-Day Return Policy', action: 'nav', path: '/returns' },
+  { label: 'Warranty & Service Centers', action: 'soon' },
+  { label: 'Concierge Support', action: 'nav', path: '/contact' },
+  { label: 'Authenticity Certificate FAQ', action: 'nav', path: '/help' },
 ];
-const FOOT_BAR = ['Gift Cards', 'Track Order', 'Help Center', 'Careers'];
-const PAYMENTS = ['VISA', 'Mastercard', 'RuPay', 'UPI', 'Net Banking', 'Cash on Delivery'];
+
+const FOOT_BOTTOM = [
+  { label: 'Terms of Service', path: '/terms' },
+  { label: 'Privacy Policy', path: '/privacy' },
+  { label: 'Artisan Standard Compliance', path: null },
+];
 
 export function SiteFooter({ onToast, showBanner = true }) {
   const soon = (label) => () => onToast && onToast(`${label} page is coming soon.`);
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubscribed(true);
+    setEmail('');
+    onToast && onToast('You are on the atelier invitation list.');
+  };
+
+  const careClick = (item) => () => {
+    if (item.action === 'nav') navigate(item.path);
+    else soon(item.label)();
+  };
 
   return (
     <>
@@ -290,9 +344,33 @@ export function SiteFooter({ onToast, showBanner = true }) {
 
       <footer className="sx-foot">
         <div className="sx-wrap sx-foot__grid">
+          <div className="sx-foot__col sx-foot__brand">
+            <button type="button" className="sx-foot__brandname" onClick={() => navigate('/about')}>
+              <i className="sx-foot__branddot" /> AMIHIVE
+            </button>
+
+            <p>
+              An artisanal emporium curated with horological precision. Celebrating heritage craft,
+              master leatherwork, and bespoke creations from verified studios across India.
+            </p>
+
+            <span className="sx-foot__assure">
+              <Ico name="shield" size={15} /> 100% Provenance Guaranteed
+            </span>
+          </div>
+
           <div className="sx-foot__col">
-            <h4>About</h4>
-            {FOOT_ABOUT.map((label) => (
+            <h4>Shop Curations</h4>
+            {FOOT_CURATIONS.map((label) => (
+              <button type="button" className="sx-foot__link" key={label} onClick={() => navigate('/categories')}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="sx-foot__col">
+            <h4>Discover Atelier</h4>
+            {FOOT_ATELIER.map((label) => (
               <button type="button" className="sx-foot__link" key={label} onClick={soon(label)}>
                 {label}
               </button>
@@ -300,75 +378,64 @@ export function SiteFooter({ onToast, showBanner = true }) {
           </div>
 
           <div className="sx-foot__col">
-            <h4>Help</h4>
-            {FOOT_HELP.map((label) => (
-              <button type="button" className="sx-foot__link" key={label} onClick={soon(label)}>
-                {label}
+            <h4>Customer Care</h4>
+            {FOOT_CARE.map((item) => (
+              <button type="button" className="sx-foot__link" key={item.label} onClick={careClick(item)}>
+                {item.label}
               </button>
             ))}
           </div>
 
-          <div className="sx-foot__col">
-            <h4>Consumer policy</h4>
-            {FOOT_POLICY.map((label) => (
-              <button type="button" className="sx-foot__link" key={label} onClick={soon(label)}>
-                {label}
+          <div className="sx-foot__col sx-foot__gazette">
+            <h4>Integrity &amp; Gazette</h4>
+            <p>Receive private invitations to private ateliers and rare limited allocations.</p>
+
+            <form className="sx-foot__form" onSubmit={handleSubscribe}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your atelier email"
+                aria-label="Email address"
+                required
+              />
+              <button type="submit" className="sx-btn sx-btn--signal sx-btn--sm sx-btn--block">
+                Subscribe
               </button>
-            ))}
-          </div>
+            </form>
 
-          <div className="sx-foot__col sx-foot__col--divider">
-            <h4>Mail us</h4>
+            {subscribed && (
+              <p className="sx-foot__ok" role="status">
+                <Ico name="check" size={14} /> You&apos;re on the list.
+              </p>
+            )}
 
-            <address className="sx-foot__addr">
-              <b>{COMPANY.name}</b>
-              {COMPANY.mailLines.map((line) => (
-                <span key={line}>{line}</span>
-              ))}
-              <span>{COMPANY.email}</span>
-            </address>
-
-            <h4>Social</h4>
-
-            <div className="sx-foot__social">
-              {FOOT_SOCIAL.map((s) => (
-                <button type="button" key={s.icon} aria-label={s.label} onClick={soon(s.label)}>
-                  <Ico name={s.icon} size={18} />
-                </button>
-              ))}
+            <div className="sx-foot__currency">
+              <span>Currency:</span>
+              <b>₹ INR (₹)</b>
             </div>
-          </div>
-
-          <div className="sx-foot__col">
-            <h4>Registered office address</h4>
-
-            <address className="sx-foot__addr">
-              <b>{COMPANY.name}</b>
-              {COMPANY.officeLines.map((line) => (
-                <span key={line}>{line}</span>
-              ))}
-              <span>CIN : {COMPANY.cin}</span>
-              <span>Telephone: {COMPANY.phone}</span>
-            </address>
           </div>
         </div>
 
         <div className="sx-wrap sx-foot__bar">
+          <span className="sx-foot__copy">© {new Date().getFullYear()} AMIHIVE Luxury Craft Pvt Ltd. All rights reserved.</span>
+
           <div className="sx-foot__barlinks">
-            {FOOT_BAR.map((label) => (
-              <button type="button" key={label} className="sx-foot__link" onClick={soon(label)}>
-                {label}
+            {FOOT_BOTTOM.map((item) => (
+              <button
+                type="button"
+                key={item.label}
+                className="sx-foot__link"
+                onClick={item.path ? () => navigate(item.path) : soon(item.label)}
+              >
+                {item.label}
               </button>
             ))}
           </div>
 
-          <span className="sx-foot__copy">© {new Date().getFullYear()} Amihive.com</span>
-
-          <div className="sx-foot__pay">
-            {PAYMENTS.map((p) => (
-              <span key={p}>{p}</span>
-            ))}
-          </div>
+          <span className="sx-foot__secure">
+            <Ico name="lock" size={14} /> 256-Bit Encrypted Checkout
+          </span>
         </div>
       </footer>
     </>

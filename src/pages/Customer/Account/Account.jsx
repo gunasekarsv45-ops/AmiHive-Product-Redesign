@@ -5,6 +5,32 @@ import { PRODUCTS, Stars, formatPrice, goToProductPage } from '../Home1/Home1';
 import { SiteHeader, SiteFooter, Ico, navigate, useToast } from '../Shared/SiteChrome';
 
 /* ------------------------------------------------------------------
+   Atelier-style trust ticker (this page only)
+------------------------------------------------------------------- */
+const TICKER = [
+  { icon: 'shield', text: 'Atelier certified' },
+  { icon: 'clock', text: '48h express dispatch' },
+  { icon: 'lock', text: 'Secure payments' },
+  { icon: 'truck', text: 'Free delivery above ₹1,999' },
+  { icon: 'returns', text: 'Easy 7-day returns' },
+  { icon: 'check', text: 'Verified authentic craft' },
+];
+
+function TopTicker() {
+  return (
+    <div className="sx-ticker" aria-hidden="true">
+      <div className="sx-ticker__track">
+        {[...TICKER, ...TICKER].map((t, i) => (
+          <span className="sx-ticker__item" key={i}>
+            <Ico name={t.icon} size={13} /> {t.text}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------
    DEMO DATA — replace with your real logged-in user / API data
 ------------------------------------------------------------------- */
 const USER = {
@@ -30,6 +56,9 @@ const TABS = [
 
 const STEPS = ['Ordered', 'Packed', 'Shipped', 'Out for delivery', 'Delivered'];
 
+/* Orders now carry the extra Amazon/Flipkart-style detail:
+   payment method, delivery address, courier + AWB tracking,
+   and the pieces needed for a full price breakdown. */
 const ORDERS = [
   {
     id: 'AMH-260920-1042',
@@ -37,6 +66,12 @@ const ORDERS = [
     status: 'transit',
     step: 2,
     eta: 'Arriving by 28 Sep',
+    payment: 'UPI · arjun@okbank',
+    address: 'Arjun Kumar, 12 Sample Street, Sample Nagar, Chennai, Tamil Nadu – 600001',
+    courier: 'BlueDart Express',
+    tracking: 'BD3391920456IN',
+    delivery: 0,
+    discount: 0,
     total: 21280,
     items: [
       { pid: 'f1', name: 'Aster No.04', sub: 'Automatic blue dial watch', image: 'wristBlack', price: 18990, qty: 1 },
@@ -49,7 +84,13 @@ const ORDERS = [
     status: 'delivered',
     step: 4,
     eta: 'Delivered on 6 Aug 2026',
-    total: 2990,
+    payment: 'Visa card ending 4417',
+    address: 'Arjun Kumar, 12 Sample Street, Sample Nagar, Chennai, Tamil Nadu – 600001',
+    courier: 'Delhivery',
+    tracking: 'DL9827301145',
+    delivery: 0,
+    discount: 200,
+    total: 2790,
     items: [{ pid: 'f6', name: 'Cognac Strap', sub: 'Italian leather', image: 'strap', price: 2990, qty: 1 }],
   },
   {
@@ -58,6 +99,12 @@ const ORDERS = [
     status: 'delivered',
     step: 4,
     eta: 'Delivered on 19 Jun 2026',
+    payment: 'Mastercard ending 0921',
+    address: 'Arjun Kumar, 4th Floor, Example Tech Park, Main Road, Bengaluru, Karnataka – 560001',
+    courier: 'BlueDart Express',
+    tracking: 'BD1147790023IN',
+    delivery: 0,
+    discount: 0,
     total: 16990,
     items: [{ pid: 'f3', name: 'Aster No.01', sub: 'Classic everyday', image: 'goldClose', price: 16990, qty: 1 }],
   },
@@ -67,6 +114,12 @@ const ORDERS = [
     status: 'cancelled',
     step: 0,
     eta: 'Cancelled on 3 Apr 2026',
+    payment: 'Cash on delivery',
+    address: 'Arjun Kumar, 12 Sample Street, Sample Nagar, Chennai, Tamil Nadu – 600001',
+    courier: null,
+    tracking: null,
+    delivery: 0,
+    discount: 0,
     total: 3490,
     items: [{ pid: 'f2', name: 'Signature Clasp', sub: 'Steel jubilee strap', image: 'jubilee', price: 3490, qty: 1 }],
   },
@@ -467,8 +520,40 @@ function Profile({ user, onSaved }) {
 }
 
 /* ------------------------------------------------------------------
-   ORDERS
+   ORDERS — full Amazon/Flipkart-style order detail
 ------------------------------------------------------------------- */
+function PriceBreakdown({ o }) {
+  const subtotal = o.items.reduce((s, it) => s + it.price * it.qty, 0);
+
+  return (
+    <div className="ac-billing">
+      <div className="ac-billing__row">
+        <span>Item total</span>
+        <span>₹{formatPrice(subtotal)}</span>
+      </div>
+
+      <div className="ac-billing__row">
+        <span>Delivery</span>
+        <span>{o.delivery ? `₹${formatPrice(o.delivery)}` : 'FREE'}</span>
+      </div>
+
+      {o.discount > 0 && (
+        <div className="ac-billing__row ac-billing__row--off">
+          <span>Coupon discount</span>
+          <span>−₹{formatPrice(o.discount)}</span>
+        </div>
+      )}
+
+      <div className="ac-billing__row ac-billing__row--total">
+        <span>Order total</span>
+        <span>₹{formatPrice(o.total)}</span>
+      </div>
+
+      <span className="ac-billing__note">Inclusive of all taxes (GST)</span>
+    </div>
+  );
+}
+
 function Orders({ toast }) {
   const [filter, setFilter] = useState('all');
 
@@ -532,6 +617,28 @@ function Orders({ toast }) {
             </div>
           </header>
 
+          {/* delivery address / payment method / courier tracking */}
+          <div className="ac-orderinfo">
+            <div>
+              <span>Delivery address</span>
+              <p>{o.address}</p>
+            </div>
+
+            <div>
+              <span>Payment method</span>
+              <p>{o.payment}</p>
+            </div>
+
+            {o.courier && (
+              <div>
+                <span>Courier partner</span>
+                <p>
+                  {o.courier} · AWB {o.tracking}
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="ac-order__body">
             <div className="ac-order__status">
               <span className={`ac-badge ac-badge--${o.status}`}>{STATUS_LABEL[o.status]}</span>
@@ -576,7 +683,7 @@ function Orders({ toast }) {
                         Buy it again
                       </button>
                       <button type="button" className="sx-btn sx-btn--ghost sx-btn--sm" onClick={() => toast('Review form coming soon.')}>
-                        Write a review
+                        Rate & review
                       </button>
                     </>
                   )}
@@ -589,6 +696,8 @@ function Orders({ toast }) {
                 </div>
               </div>
             ))}
+
+            <PriceBreakdown o={o} />
           </div>
 
           <footer className="ac-order__foot">
@@ -1305,6 +1414,8 @@ function Account() {
 
   return (
     <div className="sx-root ac-root">
+      <TopTicker />
+
       <SiteHeader active="account" wishCount={wishIds.length} cartCount={cartCount} onToast={showToast} />
 
       <nav className="sx-crumb sx-wrap" aria-label="Breadcrumb">
