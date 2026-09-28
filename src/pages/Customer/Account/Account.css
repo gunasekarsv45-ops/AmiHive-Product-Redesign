@@ -1136,16 +1136,22 @@
 }
 
 /* ==================================================================
-   WISHLIST
+   WISHLIST  (FIXED: constant card height + constant image box)
+   Change --wish-h to resize every card + image at once.
    ================================================================== */
 .ac-wishgrid {
+  --wish-h: 240px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: var(--wish-h);
   gap: 14px;
 }
 
 .ac-wish {
   display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: var(--wish-h);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -1153,16 +1159,40 @@
 }
 
 .ac-wish__media {
+  position: relative;
   flex: none;
   width: 42%;
-  min-height: 220px;
+  max-width: 240px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background: var(--mist);
 }
 
-.ac-wish__img {
+/* whatever SmartImage renders (wrapper or <img>) fills the box exactly */
+.ac-wish__media > * {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  aspect-ratio: auto;
+}
+
+.ac-wish__img,
+.ac-wish__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: auto;
   object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .ac-wish__body {
@@ -1171,7 +1201,9 @@
   gap: 4px;
   flex: 1;
   min-width: 0;
+  height: 100%;
   padding: 16px;
+  overflow: hidden;
 }
 
 .ac-wish__body > strong {
@@ -1467,6 +1499,13 @@
 
   .ac-reco {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* wishlist: single column when the panel gets narrow so the body has room */
+@media (max-width: 1100px) {
+  .ac-wishgrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1862,35 +1901,35 @@
     letter-spacing: 0.04em;
   }
 
+  /* ---- wishlist on mobile: 2 columns, square images, equal heights ---- */
   .ac-wishgrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
     gap: 12px;
   }
 
   .ac-wish {
     position: relative;
     flex-direction: column;
+    height: auto;
     border-radius: 10px;
   }
 
   .ac-wish__media {
     position: relative;
     display: block;
+    flex: none;
     width: 100%;
+    max-width: none;
+    height: auto;
     min-height: 0;
     aspect-ratio: 1 / 1;
     overflow: hidden;
   }
 
-  .ac-wish__img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
   .ac-wish__body {
+    height: auto;
+    flex: 1;
     gap: 3px;
     padding: 12px;
   }

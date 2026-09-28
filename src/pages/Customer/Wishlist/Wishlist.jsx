@@ -81,7 +81,7 @@ function Wishlist() {
 
                     <div className="ac-wish__actions">
                       <button type="button" className="sx-btn sx-btn--ink sx-btn--sm" onClick={handleAddToCart(p.name)}>
-                        <Ico name="bag" size={15} /> Add to cart
+                        <Ico name="bag" size={15} /> Move to cart
                       </button>
 
                       <button
