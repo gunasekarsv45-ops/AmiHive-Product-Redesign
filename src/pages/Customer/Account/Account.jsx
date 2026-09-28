@@ -300,7 +300,11 @@ function Overview({ user, go, wishCount, toast }) {
             <span className={`ac-badge ac-badge--${recent.status}`}>{STATUS_LABEL[recent.status]}</span>
           </div>
 
-          <button type="button" className="sx-btn sx-btn--line sx-btn--sm" onClick={() => toast('Tracking page coming soon.')}>
+          <button
+            type="button"
+            className="sx-btn sx-btn--line sx-btn--sm"
+            onClick={() => navigate(`/track-order?id=${encodeURIComponent(recent.id)}`)}
+          >
             Track package
           </button>
         </div>
@@ -672,7 +676,11 @@ function Orders({ toast }) {
 
                 <div className="ac-item__actions">
                   {o.status === 'transit' && (
-                    <button type="button" className="sx-btn sx-btn--signal sx-btn--sm" onClick={() => toast('Tracking page coming soon.')}>
+                    <button
+                      type="button"
+                      className="sx-btn sx-btn--signal sx-btn--sm"
+                      onClick={() => navigate(`/track-order?id=${encodeURIComponent(o.id)}`)}
+                    >
                       Track package
                     </button>
                   )}

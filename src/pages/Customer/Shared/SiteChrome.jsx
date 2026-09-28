@@ -69,10 +69,13 @@ export function Ico({ name, size = 18, filled = false }) {
 
 /* ------------------------------------------------------------------
    Navigation helpers (same pushState + popstate approach as Home1)
+   navigate() now also scrolls to the top, so footer links always
+   open the next page from its beginning.
 ------------------------------------------------------------------- */
 export function navigate(path) {
   window.history.pushState({}, '', path);
   window.dispatchEvent(new PopStateEvent('popstate'));
+  window.scrollTo(0, 0);
 }
 
 export function goHomeSection(hash = '') {
@@ -110,15 +113,15 @@ export function useToast() {
 }
 
 /* ------------------------------------------------------------------
-   TOP TICKER — shared across every page (was duplicated per page)
+   TOP TICKER — shared across every page (order matches the design)
 ------------------------------------------------------------------- */
 const TICKER = [
+  { icon: 'shield', text: 'Atelier certified' },
+  { icon: 'clock', text: '48h express dispatch' },
   { icon: 'lock', text: 'Secure payments' },
   { icon: 'truck', text: 'Free delivery above ₹1,999' },
   { icon: 'returns', text: 'Easy 7-day returns' },
   { icon: 'check', text: 'Verified authentic craft' },
-  { icon: 'shield', text: 'Atelier certified' },
-  { icon: 'clock', text: '48h express dispatch' },
 ];
 
 export function TopTicker() {
@@ -137,7 +140,7 @@ export function TopTicker() {
 
 /* ------------------------------------------------------------------
    HEADER  (dark petrol bar: hamburger + logo | search, wishlist,
-   cart, profile — matches the reference screenshot exactly)
+   cart, profile)
 ------------------------------------------------------------------- */
 const MENU = [
   { key: 'home', label: 'Home', path: '/' },
@@ -145,7 +148,9 @@ const MENU = [
   { key: 'deals', label: 'Deals of the day', path: '/', hash: '#deals' },
   { key: 'build', label: 'Build your own', path: '/', hash: '#build' },
   { key: 'featured', label: 'Bestsellers', path: '/', hash: '#featured' },
-  { key: 'reviews', label: 'Reviews', path: '/', hash: '#reviews' },
+  { key: 'offers', label: 'Offers & Deals', path: '/offers' },
+  { key: 'reviews', label: 'Reviews & Ratings', path: '/reviews' },
+  { key: 'returns', label: 'Return & Refund Policy', path: '/returns' },
   { key: 'help', label: 'Help & FAQ', path: '/help' },
   { key: 'contact', label: 'Contact Us', path: '/contact' },
   { key: 'about', label: 'About Us', path: '/about' },
@@ -257,44 +262,67 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
 }
 
 /* ------------------------------------------------------------------
-   FOOTER  — matches the "AMIHIVE / Shop Curations / Discover Atelier
-   / Customer Care / Integrity & Gazette" reference screenshot.
+   FOOTER — every link routes to a real page.
+   Columns: brand | Shop Curations | Discover Atelier | Customer Care
+            | Quick Links | Integrity & Gazette
 ------------------------------------------------------------------- */
 const FOOT_CURATIONS = [
-  'Mechanical Timepieces',
-  'Handmade Ceramics',
-  'Full-Grain Leather goods',
-  'Architectural Objects',
-  'Limited Production Runs',
-  'Heirloom Keepsakes',
+  { label: 'Mechanical Timepieces', path: '/categories?cat=watch' },
+  { label: 'Handmade Ceramics', path: '/categories' },
+  { label: 'Full-Grain Leather goods', path: '/categories?cat=strap' },
+  { label: 'Architectural Objects', path: '/categories?cat=accessory' },
+  { label: 'Limited Production Runs', path: '/categories' },
+  { label: 'Heirloom Keepsakes', path: '/categories?cat=accessory' },
 ];
 
 const FOOT_ATELIER = [
-  'Artisan Profiles',
-  'Master Workshop Coordinates',
-  'Craftsmanship Stories',
-  'Materials & Provenance',
-  'Commission Bespoke',
-  'Sustainability Report',
+  { label: 'Artisan Profiles', path: '/about' },
+  { label: 'Master Workshop Coordinates', path: '/contact' },
+  { label: 'Craftsmanship Stories', path: '/about' },
+  { label: 'Materials & Provenance', path: '/about' },
+  { label: 'Commission Bespoke', path: '/contact' },
+  { label: 'Sustainability Report', path: '/about' },
 ];
 
 const FOOT_CARE = [
-  { label: 'Order Tracking', action: 'soon' },
-  { label: 'Shipping & Logistics', action: 'soon' },
-  { label: '7-Day Return Policy', action: 'nav', path: '/returns' },
-  { label: 'Warranty & Service Centers', action: 'soon' },
-  { label: 'Concierge Support', action: 'nav', path: '/contact' },
-  { label: 'Authenticity Certificate FAQ', action: 'nav', path: '/help' },
+  { label: 'Order Tracking', path: '/account?tab=orders' },
+  { label: 'Shipping & Logistics', path: '/help' },
+  { label: '7-Day Return Policy', path: '/returns' },
+  { label: 'Warranty & Service Centers', path: '/help' },
+  { label: 'Concierge Support', path: '/contact' },
+  { label: 'Authenticity Certificate FAQ', path: '/help' },
+];
+
+const FOOT_QUICK = [
+  { label: 'Home', path: '/' },
+  { label: 'Help & FAQ', path: '/help' },
+  { label: 'Contact Us', path: '/contact' },
+  { label: 'About Us', path: '/about' },
+  { label: 'Return & Refund Policy', path: '/returns' },
+  { label: 'Offers & Deals', path: '/offers' },
+  { label: 'Reviews & Ratings', path: '/reviews' },
 ];
 
 const FOOT_BOTTOM = [
   { label: 'Terms of Service', path: '/terms' },
   { label: 'Privacy Policy', path: '/privacy' },
-  { label: 'Artisan Standard Compliance', path: null },
+  { label: 'Artisan Standard Compliance', path: '/about' },
 ];
 
+function FootColumn({ title, items }) {
+  return (
+    <div className="sx-foot__col">
+      <h4>{title}</h4>
+      {items.map((item) => (
+        <button type="button" className="sx-foot__link" key={item.label} onClick={() => navigate(item.path)}>
+          {item.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function SiteFooter({ onToast, showBanner = true }) {
-  const soon = (label) => () => onToast && onToast(`${label} page is coming soon.`);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -306,36 +334,48 @@ export function SiteFooter({ onToast, showBanner = true }) {
     onToast && onToast('You are on the atelier invitation list.');
   };
 
-  const careClick = (item) => () => {
-    if (item.action === 'nav') navigate(item.path);
-    else soon(item.label)();
-  };
+  const goHome = () => navigate('/');
 
   return (
     <>
       {showBanner && (
-        <section className="sx-paybanner sx-wrap" aria-label="Pay later">
-          <div className="sx-paybanner__card">
-            <div className="sx-paybanner__copy">
+        <section className="sx-market sx-wrap" aria-label="Amihive watch marketplace">
+          <div
+            className="sx-market__card"
+            role="link"
+            tabIndex={0}
+            onClick={goHome}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') goHome();
+            }}
+          >
+            <div className="sx-market__copy">
+              <span className="sx-market__tag">Amihive Marketplace</span>
+
               <h2>
-                Shop today, pay later
+                India&apos;s biggest
                 <br />
-                at no extra cost
+                watch marketplace
               </h2>
 
-              <button type="button" className="sx-paybanner__cta" onClick={soon('Pay Later')}>
-                Activate now <Ico name="right" size={20} />
-              </button>
+              <p>
+                Automatic, chronograph and field watches from verified makers. Every piece authenticated, insured and
+                dispatched within 48 hours.
+              </p>
+
+              <span className="sx-market__cta">
+                Explore the collection <Ico name="right" size={20} />
+              </span>
             </div>
 
-            <div className="sx-paybanner__art" aria-hidden="true">
-              <span className="sx-paybanner__dial">
+            <div className="sx-market__art" aria-hidden="true">
+              <span className="sx-market__dial">
                 <Ico name="clock" size={34} />
               </span>
 
-              <span className="sx-paybanner__brand">
+              <span className="sx-market__brand">
                 amihive
-                <b>PAY LATER</b>
+                <b>MARKETPLACE</b>
               </span>
             </div>
           </div>
@@ -345,7 +385,7 @@ export function SiteFooter({ onToast, showBanner = true }) {
       <footer className="sx-foot">
         <div className="sx-wrap sx-foot__grid">
           <div className="sx-foot__col sx-foot__brand">
-            <button type="button" className="sx-foot__brandname" onClick={() => navigate('/about')}>
+            <button type="button" className="sx-foot__brandname" onClick={goHome}>
               <i className="sx-foot__branddot" /> AMIHIVE
             </button>
 
@@ -359,32 +399,10 @@ export function SiteFooter({ onToast, showBanner = true }) {
             </span>
           </div>
 
-          <div className="sx-foot__col">
-            <h4>Shop Curations</h4>
-            {FOOT_CURATIONS.map((label) => (
-              <button type="button" className="sx-foot__link" key={label} onClick={() => navigate('/categories')}>
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="sx-foot__col">
-            <h4>Discover Atelier</h4>
-            {FOOT_ATELIER.map((label) => (
-              <button type="button" className="sx-foot__link" key={label} onClick={soon(label)}>
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="sx-foot__col">
-            <h4>Customer Care</h4>
-            {FOOT_CARE.map((item) => (
-              <button type="button" className="sx-foot__link" key={item.label} onClick={careClick(item)}>
-                {item.label}
-              </button>
-            ))}
-          </div>
+          <FootColumn title="Shop Curations" items={FOOT_CURATIONS} />
+          <FootColumn title="Discover Atelier" items={FOOT_ATELIER} />
+          <FootColumn title="Customer Care" items={FOOT_CARE} />
+          <FootColumn title="Quick Links" items={FOOT_QUICK} />
 
           <div className="sx-foot__col sx-foot__gazette">
             <h4>Integrity &amp; Gazette</h4>
@@ -422,12 +440,7 @@ export function SiteFooter({ onToast, showBanner = true }) {
 
           <div className="sx-foot__barlinks">
             {FOOT_BOTTOM.map((item) => (
-              <button
-                type="button"
-                key={item.label}
-                className="sx-foot__link"
-                onClick={item.path ? () => navigate(item.path) : soon(item.label)}
-              >
+              <button type="button" key={item.label} className="sx-foot__link" onClick={() => navigate(item.path)}>
                 {item.label}
               </button>
             ))}

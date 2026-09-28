@@ -10,6 +10,12 @@ import PrivacyPolicy from './pages/Customer/PrivacyPolicy/PrivacyPolicy';
 import NotFound from './pages/Customer/NotFound/NotFound';
 import TermsConditions from './pages/Customer/TermsConditions/TermsConditions';
 import ReturnRefundPolicy from './pages/Customer/ReturnRefundPolicy/ReturnRefundPolicy';
+import OffersDeals from './pages/Customer/OffersDeals/OffersDeals';
+import ReviewsRatings from './pages/Customer/ReviewsRatings/ReviewsRatings';
+import TrackOrder from './pages/Customer/TrackOrder/TrackOrder';
+import Wishlist from './pages/Customer/Wishlist/Wishlist';
+import AddAddress from './pages/Customer/AddAddress/AddAddress';
+import AddressManagement from './pages/Customer/AddressManagement/AddressManagement';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -65,6 +71,12 @@ const SIMPLE_ROUTES = {
   '/privacy': 'privacy',
   '/terms': 'terms',
   '/returns': 'returns',
+  '/offers': 'offers',
+  '/reviews': 'reviews',
+  '/track-order': 'track-order',
+  '/wishlist': 'wishlist',
+  '/add-address': 'add-address',
+  '/addresses': 'addresses',
 };
 
 function getRoute() {
@@ -126,6 +138,15 @@ function App() {
       {route.page === 'privacy' && <PrivacyPolicy />}
       {route.page === 'terms' && <TermsConditions />}
       {route.page === 'returns' && <ReturnRefundPolicy />}
+      {route.page === 'offers' && <OffersDeals />}
+      {route.page === 'reviews' && <ReviewsRatings />}
+
+      {route.page === 'track-order' && (
+        <TrackOrder key={route.search} orderId={new URLSearchParams(route.search).get('id')} />
+      )}
+      {route.page === 'wishlist' && <Wishlist />}
+      {route.page === 'add-address' && <AddAddress />}
+      {route.page === 'addresses' && <AddressManagement />}
 
       {route.page === 'home' && <Home1 />}
       {route.page === 'notfound' && <NotFound />}

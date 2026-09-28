@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './Home1.css';
 import ProductGallery, { SmartImage, img } from './ProductGallery';
+import { TopTicker, SiteHeader, SiteFooter } from '../Shared/SiteChrome';
 
 /* ------------------------------------------------------------------
    CONSTANTS
@@ -28,21 +29,6 @@ export const ICONS = {
   returns: 'M4 12a8 8 0 0 1 14-5l2 2M20 4v5h-5M20 12a8 8 0 0 1-14 5l-2-2M4 20v-5h5',
   plus: 'M12 5v14M5 12h14',
 };
-
-const NAV = [
-  { label: 'Collection', href: '#categories' },
-  { label: 'Deals', href: '#deals' },
-  { label: 'Build your own', href: '#build' },
-  { label: 'Bestsellers', href: '#featured' },
-  { label: 'Reviews', href: '#reviews' },
-];
-
-const ADS = [
-  'Free insured shipping on every order',
-  'Extra 5% off on prepaid orders',
-  'New arrivals every Friday',
-  '2-year international warranty',
-];
 
 const BANNERS = [
   {
@@ -390,10 +376,6 @@ function Configurator({ onAdd }) {
    PAGE
 ------------------------------------------------------------------- */
 function Home1() {
-  const [query, setQuery] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [resume, setResume] = useState(0);
@@ -411,14 +393,6 @@ function Home1() {
   const toastTimer = useRef(null);
   const [bentoRef, bentoIn] = useInView(0.15);
   const [hh, mm, ss] = useCountdown();
-
-  /* sticky header shadow */
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   /* hero auto-advance */
   useEffect(() => {
@@ -457,13 +431,6 @@ function Home1() {
   const toggleWishlist = (id) => setWishlist((current) => ({ ...current, [id]: !current[id] }));
   const wishCount = Object.values(wishlist).filter(Boolean).length;
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setFilter('all');
-    const target = document.getElementById('featured');
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (!email) return;
@@ -480,14 +447,10 @@ function Home1() {
     rail.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return PRODUCTS.filter(
-      (p) =>
-        (filter === 'all' || p.type === filter) &&
-        (!q || `${p.name} ${p.subtitle}`.toLowerCase().includes(q))
-    );
-  }, [filter, query]);
+  const visible = useMemo(
+    () => PRODUCTS.filter((p) => filter === 'all' || p.type === filter),
+    [filter]
+  );
 
   const review = TESTIMONIALS[quote];
 
@@ -522,412 +485,243 @@ function Home1() {
     if (e.key === 'Enter') handleCategoryClick();
   };
 
-  const handleProfileClick = () => showToast('Profile page coming soon.');
-
   const toggleFaq = (i) => () => setOpenFaq((cur) => (cur === i ? null : i));
 
   return (
-    <div className="ah-root">
-      {/* ---------- announcement ticker ---------- */}
-      <div className="ah-ticker" aria-label="Current offers">
-        <div className="ah-ticker__track">
-          {[...ADS, ...ADS].map((text, i) => (
-            <span className="ah-ticker__item" key={i} aria-hidden={i >= ADS.length}>
-              {text}
-            </span>
-          ))}
-        </div>
-      </div>
+    <div className="sx-root">
+      {/* ---------- shared ticker + header ---------- */}
+      <TopTicker />
+      <SiteHeader active="home" wishCount={wishCount} cartCount={cartCount} onToast={showToast} />
 
-      {/* ---------- header ---------- */}
-      <header className={`ah-header ${scrolled ? 'is-scrolled' : ''}`}>
-        <div className="ah-wrap ah-header__row">
-          <button
-            type="button"
-            className="ah-iconbtn ah-burger"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((o) => !o)}
+      <div className="ah-root">
+        <main>
+          {/* ---------- hero carousel ---------- */}
+          <section
+            className={`ah-hero ${paused ? 'is-paused' : ''}`}
+            aria-roledescription="carousel"
+            aria-label="Featured collections"
+            onMouseEnter={holdHero}
+            onMouseLeave={releaseHero}
           >
-            <Icon name={menuOpen ? 'close' : 'menu'} />
-          </button>
-
-          <a className="ah-logo" href="/" aria-label="amihive home">
-            amihive<i className="ah-logo__hand" />
-          </a>
-
-          <nav className={`ah-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Main">
-            {NAV.map((item) => (
-              <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-          <form className="ah-search" onSubmit={handleSearch} role="search">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search watches, straps and more"
-              aria-label="Search products"
-            />
-            <button type="submit" aria-label="Search">
-              <Icon name="search" size={18} />
-            </button>
-          </form>
-
-          <div className="ah-actions">
-            <button type="button" className="ah-iconbtn" aria-label={`Wishlist, ${wishCount} saved`}>
-              <Icon name="heart" />
-              {wishCount > 0 && (
-                <span className="ah-count" key={wishCount}>
-                  {wishCount}
-                </span>
-              )}
-            </button>
-
-            <button type="button" className="ah-iconbtn" aria-label={`Cart, ${cartCount} items`}>
-              <Icon name="bag" />
-              {cartCount > 0 && (
-                <span className="ah-count" key={cartCount}>
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              className="ah-iconbtn ah-iconbtn--account"
-              aria-label="Profile"
-              onClick={handleProfileClick}
-            >
-              <Icon name="user" />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main>
-        {/* ---------- hero carousel ---------- */}
-        <section
-          className={`ah-hero ${paused ? 'is-paused' : ''}`}
-          aria-roledescription="carousel"
-          aria-label="Featured collections"
-          onMouseEnter={holdHero}
-          onMouseLeave={releaseHero}
-        >
-          {BANNERS.map((b, i) => (
-            <article
-              key={b.id}
-              className={`ah-slide ${i === active ? 'is-active' : ''}`}
-              aria-hidden={i !== active}
-              aria-roledescription="slide"
-              aria-label={`${i + 1} of ${BANNERS.length}`}
-            >
-              <SmartImage className="ah-slide__img" src={img(b.image, 1920)} alt="" eager={i === 0} />
-              <div className="ah-slide__shade" />
-              <div className="ah-wrap ah-slide__inner">
-                <div className="ah-slide__copy">
-                  <span className="ah-slide__tag ah-rise" style={{ '--d': 0 }}>
-                    {b.tag}
-                  </span>
-
-                  <h1 className="ah-slide__title ah-rise" style={{ '--d': 1 }}>
-                    {b.title}
-                  </h1>
-
-                  <p className="ah-slide__text ah-rise" style={{ '--d': 2 }}>
-                    {b.text}
-                  </p>
-
-                  <div className="ah-slide__actions ah-rise" style={{ '--d': 3 }}>
-                    <a className="ah-btn ah-btn--signal" href={b.href} tabIndex={i === active ? 0 : -1}>
-                      {b.cta}
-                    </a>
-                    <span className="ah-slide__price">{b.price}</span>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
-
-          <div className="ah-hero__bar">
-            <div className="ah-wrap ah-hero__barinner">
-              <div className="ah-tabs" role="tablist" aria-label="Choose slide">
-                {BANNERS.map((b, i) => (
-                  <button
-                    key={b.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={i === active}
-                    className={`ah-tab ${i === active ? 'is-active' : ''}`}
-                    onClick={() => go(i)}
-                  >
-                    <span className="ah-tab__name">{b.tab}</span>
-
-                    <span
-                      className="ah-ticks"
-                      style={{ '--step': `${SLIDE_MS / TICKS}ms` }}
-                      key={i === active ? `on-${resume}` : 'off'}
-                      aria-hidden="true"
-                    >
-                      {Array.from({ length: TICKS }).map((_, n) => (
-                        <i className="ah-tick" style={{ '--i': n }} key={n} />
-                      ))}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="ah-hero__arrows">
-                <button type="button" className="ah-round" onClick={() => go(active - 1)} aria-label="Previous slide">
-                  <Icon name="left" />
-                </button>
-
-                <button type="button" className="ah-round" onClick={() => go(active + 1)} aria-label="Next slide">
-                  <Icon name="right" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- assurances ---------- */}
-        <section className="ah-assure" aria-label="Our promises">
-          <div className="ah-wrap ah-assure__grid">
-            {ASSURANCES.map((item) => (
-              <div className="ah-assure__item" key={item.title}>
-                <span className="ah-assure__icon">
-                  <Icon name={item.icon} size={22} />
-                </span>
-
-                <span>
-                  <strong>{item.title}</strong>
-                  <em>{item.text}</em>
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ---------- press / as featured in ---------- */}
-        <section className="ah-press" aria-label="As featured in">
-          <div className="ah-wrap ah-press__row">
-            <span className="ah-press__label">As featured in</span>
-            <div className="ah-press__logos">
-              {PRESS_MENTIONS.map((name) => (
-                <span className="ah-press__logo" key={name}>
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- categories ---------- */}
-        <section className="ah-section" id="categories">
-          <div className="ah-wrap">
-            <div className="ah-head">
-              <h2>Shop by category</h2>
-              <p>Five ways into the lineup, from self-winding watches to the details that finish them.</p>
-            </div>
-
-            <div className={`ah-bento ${bentoIn ? 'is-in' : ''}`} ref={bentoRef}>
-              {CATEGORIES.map((c, i) => (
-                <div
-                  key={c.name}
-                  className={`ah-tile ${c.lead ? 'ah-tile--lead' : ''}`}
-                  style={{ '--i': i, cursor: 'pointer' }}
-                  role="link"
-                  tabIndex={0}
-                  onClick={handleCategoryClick}
-                  onKeyDown={handleCategoryKeyDown}
-                >
-                  <SmartImage className="ah-tile__img" src={img(c.image, c.lead ? 1000 : 700)} alt="" />
-
-                  <span className="ah-tile__label">
-                    <strong>{c.name}</strong>
-                    <em>{c.note}</em>
-                  </span>
-
-                  <span className="ah-tile__go">
-                    <Icon name="arrow" size={18} />
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ---------- deals rail ---------- */}
-        <section className="ah-deals ah-section" id="deals">
-          <div className="ah-wrap">
-            <div className="ah-head ah-head--deals">
-              <div>
-                <h2>Deals of the day</h2>
-
-                <div className="ah-countdown">
-                  <span>Ends tonight in</span>
-
-                  <span className="ah-clock" aria-live="off">
-                    <b>{hh}</b>
-                    <b>{mm}</b>
-                    <b>{ss}</b>
-                  </span>
-                </div>
-              </div>
-
-              <div className="ah-rail-nav">
-                <button
-                  type="button"
-                  className="ah-round ah-round--dark"
-                  onClick={() => scrollRail(-1)}
-                  aria-label="Scroll deals left"
-                >
-                  <Icon name="left" />
-                </button>
-
-                <button
-                  type="button"
-                  className="ah-round ah-round--dark"
-                  onClick={() => scrollRail(1)}
-                  aria-label="Scroll deals right"
-                >
-                  <Icon name="right" />
-                </button>
-              </div>
-            </div>
-
-            <div className="ah-rail" ref={railRef}>
-              {DEALS.map((deal) => (
-                <article
-                  className="ah-deal"
-                  key={deal.id}
-                  role="link"
-                  tabIndex={0}
-                  style={{ cursor: 'pointer' }}
-                  onClick={handleCardOpen(deal.id)}
-                  onKeyDown={handleCardKeyDown(deal.id)}
-                >
-                  <div className="ah-deal__media">
-                    <SmartImage className="ah-deal__img" src={img(deal.image, 700)} alt={deal.name} />
-                    <span className="ah-deal__badge">{deal.discount}% off</span>
-                  </div>
-
-                  <div className="ah-deal__body">
-                    <strong>{deal.name}</strong>
-                    <span className="ah-muted">{deal.subtitle}</span>
-
-                    <span className="ah-rating">
-                      <Stars value={deal.rating} /> {deal.rating}
+            {BANNERS.map((b, i) => (
+              <article
+                key={b.id}
+                className={`ah-slide ${i === active ? 'is-active' : ''}`}
+                aria-hidden={i !== active}
+                aria-roledescription="slide"
+                aria-label={`${i + 1} of ${BANNERS.length}`}
+              >
+                <SmartImage className="ah-slide__img" src={img(b.image, 1920)} alt="" eager={i === 0} />
+                <div className="ah-slide__shade" />
+                <div className="ah-wrap ah-slide__inner">
+                  <div className="ah-slide__copy">
+                    <span className="ah-slide__tag ah-rise" style={{ '--d': 0 }}>
+                      {b.tag}
                     </span>
 
-                    <div className="ah-price">
-                      <strong>₹{formatPrice(deal.price)}</strong>
-                      <s>₹{formatPrice(deal.originalPrice)}</s>
+                    <h1 className="ah-slide__title ah-rise" style={{ '--d': 1 }}>
+                      {b.title}
+                    </h1>
+
+                    <p className="ah-slide__text ah-rise" style={{ '--d': 2 }}>
+                      {b.text}
+                    </p>
+
+                    <div className="ah-slide__actions ah-rise" style={{ '--d': 3 }}>
+                      <a className="ah-btn ah-btn--signal" href={b.href} tabIndex={i === active ? 0 : -1}>
+                        {b.cta}
+                      </a>
+                      <span className="ah-slide__price">{b.price}</span>
                     </div>
-
-                    <span className="ah-save">
-                      You save ₹{formatPrice(deal.originalPrice - deal.price)}
-                    </span>
-
-                    <button
-                      type="button"
-                      className="ah-btn ah-btn--line ah-btn--sm ah-btn--block"
-                      onClick={handleAddToCartClick(deal.name)}
-                    >
-                      Add to cart
-                    </button>
                   </div>
-                </article>
+                </div>
+              </article>
+            ))}
+
+            <div className="ah-hero__bar">
+              <div className="ah-wrap ah-hero__barinner">
+                <div className="ah-tabs" role="tablist" aria-label="Choose slide">
+                  {BANNERS.map((b, i) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={i === active}
+                      className={`ah-tab ${i === active ? 'is-active' : ''}`}
+                      onClick={() => go(i)}
+                    >
+                      <span className="ah-tab__name">{b.tab}</span>
+
+                      <span
+                        className="ah-ticks"
+                        style={{ '--step': `${SLIDE_MS / TICKS}ms` }}
+                        key={i === active ? `on-${resume}` : 'off'}
+                        aria-hidden="true"
+                      >
+                        {Array.from({ length: TICKS }).map((_, n) => (
+                          <i className="ah-tick" style={{ '--i': n }} key={n} />
+                        ))}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="ah-hero__arrows">
+                  <button type="button" className="ah-round" onClick={() => go(active - 1)} aria-label="Previous slide">
+                    <Icon name="left" />
+                  </button>
+
+                  <button type="button" className="ah-round" onClick={() => go(active + 1)} aria-label="Next slide">
+                    <Icon name="right" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ---------- assurances ---------- */}
+          <section className="ah-assure" aria-label="Our promises">
+            <div className="ah-wrap ah-assure__grid">
+              {ASSURANCES.map((item) => (
+                <div className="ah-assure__item" key={item.title}>
+                  <span className="ah-assure__icon">
+                    <Icon name={item.icon} size={22} />
+                  </span>
+
+                  <span>
+                    <strong>{item.title}</strong>
+                    <em>{item.text}</em>
+                  </span>
+                </div>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ---------- build your own ---------- */}
-        <Configurator onAdd={addToCart} />
-
-        {/* ---------- bestsellers ---------- */}
-        <section className="ah-section" id="featured">
-          <div className="ah-wrap">
-            <div className="ah-head ah-head--filters">
-              <div>
-                <h2>Bestsellers</h2>
-
-                {query.trim() && (
-                  <p className="ah-searchnote">
-                    Showing results for “{query.trim()}”{' '}
-                    <button type="button" onClick={() => setQuery('')}>
-                      Clear
-                    </button>
-                  </p>
-                )}
-              </div>
-
-              <div className="ah-chips" role="tablist" aria-label="Filter products">
-                {FILTERS.map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={filter === f.id}
-                    className={`ah-chip ${filter === f.id ? 'is-on' : ''}`}
-                    onClick={() => setFilter(f.id)}
-                  >
-                    {f.label}
-                  </button>
+          {/* ---------- press / as featured in ---------- */}
+          <section className="ah-press" aria-label="As featured in">
+            <div className="ah-wrap ah-press__row">
+              <span className="ah-press__label">As featured in</span>
+              <div className="ah-press__logos">
+                {PRESS_MENTIONS.map((name) => (
+                  <span className="ah-press__logo" key={name}>
+                    {name}
+                  </span>
                 ))}
               </div>
             </div>
+          </section>
 
-            {visible.length === 0 ? (
-              <p className="ah-empty">
-                Nothing matches that search. Clear it or pick another filter to see the full lineup.
-              </p>
-            ) : (
-              <div className="ah-grid" key={`${filter}-${query}`}>
-                {visible.map((p, i) => (
-                  <article
-                    className="ah-card"
+          {/* ---------- categories ---------- */}
+          <section className="ah-section" id="categories">
+            <div className="ah-wrap">
+              <div className="ah-head">
+                <h2>Shop by category</h2>
+                <p>Five ways into the lineup, from self-winding watches to the details that finish them.</p>
+              </div>
+
+              <div className={`ah-bento ${bentoIn ? 'is-in' : ''}`} ref={bentoRef}>
+                {CATEGORIES.map((c, i) => (
+                  <div
+                    key={c.name}
+                    className={`ah-tile ${c.lead ? 'ah-tile--lead' : ''}`}
                     style={{ '--i': i, cursor: 'pointer' }}
-                    key={p.id}
                     role="link"
                     tabIndex={0}
-                    onClick={handleCardOpen(p.id)}
-                    onKeyDown={handleCardKeyDown(p.id)}
+                    onClick={handleCategoryClick}
+                    onKeyDown={handleCategoryKeyDown}
                   >
-                    <div className="ah-card__media">
-                      <SmartImage className="ah-card__img" src={img(p.image, 700)} alt={p.name} />
+                    <SmartImage className="ah-tile__img" src={img(c.image, c.lead ? 1000 : 700)} alt="" />
 
-                      <button
-                        type="button"
-                        className={`ah-wish ${wishlist[p.id] ? 'is-on' : ''}`}
-                        onClick={handleWishlistClick(p.id)}
-                        aria-pressed={!!wishlist[p.id]}
-                        aria-label={`Save ${p.name} to wishlist`}
-                      >
-                        <Icon name="heart" size={18} />
-                      </button>
+                    <span className="ah-tile__label">
+                      <strong>{c.name}</strong>
+                      <em>{c.note}</em>
+                    </span>
+
+                    <span className="ah-tile__go">
+                      <Icon name="arrow" size={18} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ---------- deals rail ---------- */}
+          <section className="ah-deals ah-section" id="deals">
+            <div className="ah-wrap">
+              <div className="ah-head ah-head--deals">
+                <div>
+                  <h2>Deals of the day</h2>
+
+                  <div className="ah-countdown">
+                    <span>Ends tonight in</span>
+
+                    <span className="ah-clock" aria-live="off">
+                      <b>{hh}</b>
+                      <b>{mm}</b>
+                      <b>{ss}</b>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="ah-rail-nav">
+                  <button
+                    type="button"
+                    className="ah-round ah-round--dark"
+                    onClick={() => scrollRail(-1)}
+                    aria-label="Scroll deals left"
+                  >
+                    <Icon name="left" />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="ah-round ah-round--dark"
+                    onClick={() => scrollRail(1)}
+                    aria-label="Scroll deals right"
+                  >
+                    <Icon name="right" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="ah-rail" ref={railRef}>
+                {DEALS.map((deal) => (
+                  <article
+                    className="ah-deal"
+                    key={deal.id}
+                    role="link"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                    onClick={handleCardOpen(deal.id)}
+                    onKeyDown={handleCardKeyDown(deal.id)}
+                  >
+                    <div className="ah-deal__media">
+                      <SmartImage className="ah-deal__img" src={img(deal.image, 700)} alt={deal.name} />
+                      <span className="ah-deal__badge">{deal.discount}% off</span>
                     </div>
 
-                    <div className="ah-card__body">
-                      <strong>{p.name}</strong>
-                      <span className="ah-muted">{p.subtitle}</span>
+                    <div className="ah-deal__body">
+                      <strong>{deal.name}</strong>
+                      <span className="ah-muted">{deal.subtitle}</span>
 
                       <span className="ah-rating">
-                        <Stars value={p.rating} /> ({p.ratings})
+                        <Stars value={deal.rating} /> {deal.rating}
                       </span>
 
                       <div className="ah-price">
-                        <strong>₹{formatPrice(p.price)}</strong>
-                        <s>₹{formatPrice(p.originalPrice)}</s>
+                        <strong>₹{formatPrice(deal.price)}</strong>
+                        <s>₹{formatPrice(deal.originalPrice)}</s>
                       </div>
+
+                      <span className="ah-save">
+                        You save ₹{formatPrice(deal.originalPrice - deal.price)}
+                      </span>
 
                       <button
                         type="button"
-                        className="ah-btn ah-btn--ink ah-btn--sm ah-btn--block"
-                        onClick={handleAddToCartClick(p.name)}
+                        className="ah-btn ah-btn--line ah-btn--sm ah-btn--block"
+                        onClick={handleAddToCartClick(deal.name)}
                       >
                         Add to cart
                       </button>
@@ -935,198 +729,246 @@ function Home1() {
                   </article>
                 ))}
               </div>
-            )}
-          </div>
-        </section>
-
-        {/* ---------- gallery ---------- */}
-        <ProductGallery />
-
-        {/* ---------- reviews ---------- */}
-        <section className="ah-section ah-voices" id="reviews">
-          <div className="ah-wrap ah-voices__grid">
-            <div className="ah-voices__main" key={quote}>
-              <Stars value={review.rating} />
-
-              <blockquote>{review.text}</blockquote>
-
-              <p>
-                <strong>{review.name}</strong>
-                <em>Verified purchase, {review.date}</em>
-              </p>
             </div>
+          </section>
 
-            <div className="ah-voices__list" role="tablist" aria-label="Choose review">
-              {TESTIMONIALS.map((t, i) => (
-                <button
-                  key={t.name}
-                  type="button"
-                  role="tab"
-                  aria-selected={i === quote}
-                  className={`ah-voice ${i === quote ? 'is-active' : ''}`}
-                  onClick={() => setQuote(i)}
-                >
-                  <span className="ah-voice__avatar">{t.initials}</span>
+          {/* ---------- build your own ---------- */}
+          <Configurator onAdd={addToCart} />
 
-                  <span className="ah-voice__who">
-                    <strong>{t.name}</strong>
-                    <em>{t.date}</em>
-                  </span>
+          {/* ---------- bestsellers ---------- */}
+          <section className="ah-section" id="featured">
+            <div className="ah-wrap">
+              <div className="ah-head ah-head--filters">
+                <div>
+                  <h2>Bestsellers</h2>
+                </div>
 
-                  <i className="ah-voice__bar" />
-                </button>
-              ))}
+                <div className="ah-chips" role="tablist" aria-label="Filter products">
+                  {FILTERS.map((f) => (
+                    <button
+                      key={f.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={filter === f.id}
+                      className={`ah-chip ${filter === f.id ? 'is-on' : ''}`}
+                      onClick={() => setFilter(f.id)}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {visible.length === 0 ? (
+                <p className="ah-empty">Nothing here yet. Pick another filter to see the full lineup.</p>
+              ) : (
+                <div className="ah-grid" key={filter}>
+                  {visible.map((p, i) => (
+                    <article
+                      className="ah-card"
+                      style={{ '--i': i, cursor: 'pointer' }}
+                      key={p.id}
+                      role="link"
+                      tabIndex={0}
+                      onClick={handleCardOpen(p.id)}
+                      onKeyDown={handleCardKeyDown(p.id)}
+                    >
+                      <div className="ah-card__media">
+                        <SmartImage className="ah-card__img" src={img(p.image, 700)} alt={p.name} />
+
+                        <button
+                          type="button"
+                          className={`ah-wish ${wishlist[p.id] ? 'is-on' : ''}`}
+                          onClick={handleWishlistClick(p.id)}
+                          aria-pressed={!!wishlist[p.id]}
+                          aria-label={`Save ${p.name} to wishlist`}
+                        >
+                          <Icon name="heart" size={18} />
+                        </button>
+                      </div>
+
+                      <div className="ah-card__body">
+                        <strong>{p.name}</strong>
+                        <span className="ah-muted">{p.subtitle}</span>
+
+                        <span className="ah-rating">
+                          <Stars value={p.rating} /> ({p.ratings})
+                        </span>
+
+                        <div className="ah-price">
+                          <strong>₹{formatPrice(p.price)}</strong>
+                          <s>₹{formatPrice(p.originalPrice)}</s>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="ah-btn ah-btn--ink ah-btn--sm ah-btn--block"
+                          onClick={handleAddToCartClick(p.name)}
+                        >
+                          Add to cart
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ---------- our story ---------- */}
-        <section className="ah-section ah-story" id="story">
-          <div className="ah-wrap ah-story__grid">
-            <div className="ah-story__media">
-              <SmartImage className="ah-story__img" src={img('studio', 1000)} alt="Amihive watchmaking studio" />
-              <div className="ah-story__badge">
-                <strong>Since 2018</strong>
-                <span>Independent watchmaking</span>
+          {/* ---------- gallery ---------- */}
+          <ProductGallery />
+
+          {/* ---------- reviews ---------- */}
+          <section className="ah-section ah-voices" id="reviews">
+            <div className="ah-wrap ah-voices__grid">
+              <div className="ah-voices__main" key={quote}>
+                <Stars value={review.rating} />
+
+                <blockquote>{review.text}</blockquote>
+
+                <p>
+                  <strong>{review.name}</strong>
+                  <em>Verified purchase, {review.date}</em>
+                </p>
+              </div>
+
+              <div className="ah-voices__list" role="tablist" aria-label="Choose review">
+                {TESTIMONIALS.map((t, i) => (
+                  <button
+                    key={t.name}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === quote}
+                    className={`ah-voice ${i === quote ? 'is-active' : ''}`}
+                    onClick={() => setQuote(i)}
+                  >
+                    <span className="ah-voice__avatar">{t.initials}</span>
+
+                    <span className="ah-voice__who">
+                      <strong>{t.name}</strong>
+                      <em>{t.date}</em>
+                    </span>
+
+                    <i className="ah-voice__bar" />
+                  </button>
+                ))}
               </div>
             </div>
+          </section>
 
-            <div className="ah-story__copy">
-              <h2>Built by people who wear what they make</h2>
-              <p>
-                Amihive started in a small workshop with one idea: a mechanical watch worth wearing every single
-                day, not saving for occasions. Every case is machined, assembled and tested by the same small team
-                before it ships.
-              </p>
-              <p>
-                We keep the lineup small on purpose, so every piece gets the attention it deserves, from the first
-                sketch to the watch on your wrist.
-              </p>
+          {/* ---------- our story ---------- */}
+          <section className="ah-section ah-story" id="story">
+            <div className="ah-wrap ah-story__grid">
+              <div className="ah-story__media">
+                <SmartImage className="ah-story__img" src={img('studio', 1000)} alt="Amihive watchmaking studio" />
+                <div className="ah-story__badge">
+                  <strong>Since 2018</strong>
+                  <span>Independent watchmaking</span>
+                </div>
+              </div>
 
-              <div className="ah-story__stats">
-                {STORY_STATS.map((s) => (
-                  <div className="ah-story__stat" key={s.label}>
-                    <strong>{s.value}</strong>
-                    <span>{s.label}</span>
+              <div className="ah-story__copy">
+                <h2>Built by people who wear what they make</h2>
+                <p>
+                  Amihive started in a small workshop with one idea: a mechanical watch worth wearing every single
+                  day, not saving for occasions. Every case is machined, assembled and tested by the same small team
+                  before it ships.
+                </p>
+                <p>
+                  We keep the lineup small on purpose, so every piece gets the attention it deserves, from the first
+                  sketch to the watch on your wrist.
+                </p>
+
+                <div className="ah-story__stats">
+                  {STORY_STATS.map((s) => (
+                    <div className="ah-story__stat" key={s.label}>
+                      <strong>{s.value}</strong>
+                      <span>{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <a className="ah-btn ah-btn--ink" href="#featured">
+                  Shop the collection
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* ---------- faq ---------- */}
+          <section className="ah-section ah-faq" id="faq">
+            <div className="ah-wrap ah-faq__wrap">
+              <div className="ah-head">
+                <h2>Frequently asked questions</h2>
+                <p>Everything you need to know before your first Amihive watch arrives.</p>
+              </div>
+
+              <div className="ah-faq__list">
+                {FAQS.map((item, i) => (
+                  <div className={`ah-faq__item ${openFaq === i ? 'is-open' : ''}`} key={item.q}>
+                    <button
+                      type="button"
+                      className="ah-faq__q"
+                      aria-expanded={openFaq === i}
+                      onClick={toggleFaq(i)}
+                    >
+                      {item.q}
+                      <span className="ah-faq__icon">
+                        <Icon name="plus" size={16} />
+                      </span>
+                    </button>
+
+                    <div className="ah-faq__a" style={{ maxHeight: openFaq === i ? '300px' : '0px' }}>
+                      <p>{item.a}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-
-              <a className="ah-btn ah-btn--ink" href="#featured">
-                Shop the collection
-              </a>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ---------- faq ---------- */}
-        <section className="ah-section ah-faq" id="faq">
-          <div className="ah-wrap ah-faq__wrap">
-            <div className="ah-head">
-              <h2>Frequently asked questions</h2>
-              <p>Everything you need to know before your first Amihive watch arrives.</p>
+          {/* ---------- newsletter ---------- */}
+          <section className="ah-news">
+            <div className="ah-wrap ah-news__inner">
+              <div>
+                <h2>Stay ahead of new drops</h2>
+                <p>Join our list for early access to new collections and member-only offers.</p>
+              </div>
+
+              <form className="ah-news__form" onSubmit={handleSubscribe}>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  aria-label="Email address"
+                  required
+                />
+
+                <button type="submit" className="ah-btn ah-btn--ink">
+                  Subscribe
+                </button>
+
+                {subscribed && (
+                  <p className="ah-news__ok" role="status">
+                    <Icon name="check" size={16} /> You&apos;re subscribed. Welcome to amihive.
+                  </p>
+                )}
+              </form>
             </div>
+          </section>
+        </main>
 
-            <div className="ah-faq__list">
-              {FAQS.map((item, i) => (
-                <div className={`ah-faq__item ${openFaq === i ? 'is-open' : ''}`} key={item.q}>
-                  <button
-                    type="button"
-                    className="ah-faq__q"
-                    aria-expanded={openFaq === i}
-                    onClick={toggleFaq(i)}
-                  >
-                    {item.q}
-                    <span className="ah-faq__icon">
-                      <Icon name="plus" size={16} />
-                    </span>
-                  </button>
-
-                  <div className="ah-faq__a" style={{ maxHeight: openFaq === i ? '300px' : '0px' }}>
-                    <p>{item.a}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {toast && (
+          <div className="ah-toast" role="status" key={toast}>
+            <Icon name="check" size={16} /> {toast}
           </div>
-        </section>
+        )}
+      </div>
 
-        {/* ---------- newsletter ---------- */}
-        <section className="ah-news">
-          <div className="ah-wrap ah-news__inner">
-            <div>
-              <h2>Stay ahead of new drops</h2>
-              <p>Join our list for early access to new collections and member-only offers.</p>
-            </div>
-
-            <form className="ah-news__form" onSubmit={handleSubscribe}>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                aria-label="Email address"
-                required
-              />
-
-              <button type="submit" className="ah-btn ah-btn--ink">
-                Subscribe
-              </button>
-
-              {subscribed && (
-                <p className="ah-news__ok" role="status">
-                  <Icon name="check" size={16} /> You&apos;re subscribed. Welcome to amihive.
-                </p>
-              )}
-            </form>
-          </div>
-        </section>
-      </main>
-
-      {/* ---------- footer ---------- */}
-      <footer className="ah-footer" id="care">
-        <div className="ah-wrap ah-footer__grid">
-          <div className="ah-footer__brand">
-            <strong>amihive</strong>
-            <p>Mechanical watches, made to be worn every day and kept for a long time.</p>
-          </div>
-
-          <div className="ah-footer__col">
-            <h4>Shop</h4>
-            <a href="#featured">All watches</a>
-            <a href="#featured">Straps</a>
-            <a href="#featured">Gift cards</a>
-          </div>
-
-          <div className="ah-footer__col">
-            <h4>Support</h4>
-            <a href="#care">Sizing guide</a>
-            <a href="#care">Warranty</a>
-            <a href="#care">Contact us</a>
-          </div>
-
-          <div className="ah-footer__col">
-            <h4>Company</h4>
-            <a href="#care">Our story</a>
-            <a href="#care">Workshop</a>
-          </div>
-        </div>
-
-        <div className="ah-wrap ah-footer__bottom">
-          <span>© {new Date().getFullYear()} Amihive Timepieces</span>
-          <span>Privacy and terms</span>
-        </div>
-
-        <div className="ah-footer__mark" aria-hidden="true">
-          amihive
-        </div>
-      </footer>
-
-      {toast && (
-        <div className="ah-toast" role="status" key={toast}>
-          <Icon name="check" size={16} /> {toast}
-        </div>
-      )}
+      {/* ---------- shared footer (marketplace banner hidden on Home,
+           since it links back to Home) ---------- */}
+      <SiteFooter onToast={showToast} showBanner={false} />
     </div>
   );
 }
