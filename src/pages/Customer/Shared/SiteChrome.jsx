@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './SiteChrome.css';
+import './HeaderMenu.css';
 
 /* ------------------------------------------------------------------
    Icons (self-contained so this file never imports Home1)
@@ -41,6 +42,9 @@ const PATHS = {
   chat: 'M4 5h16v11H8l-4 4V5z',
   percent: 'M19 5 5 19M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM16.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
   up: 'M12 19V5M5 12l7-7 7 7',
+  eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+  eyeoff:
+    'M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6 0 10 6 10 6a17 17 0 0 1-3.2 3.7M6.6 6.6C3.7 8.4 2 12 2 12s4 7 10 7c1.7 0 3.2-.4 4.5-1M9.9 9.9a3 3 0 0 0 4.2 4.2',
   facebook: 'M15 3h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h2z',
   x: 'M4 4l16 16M20 4L4 20',
   youtube: 'M3 8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM10 9l5 3-5 3z',
@@ -48,10 +52,10 @@ const PATHS = {
     'M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM17.5 6.5h.01',
 };
 
-export function Ico({ name, size = 18, filled = false }) {
+export function Ico({ name, size = 18, filled = false, className = '' }) {
   return (
     <svg
-      className="sx-ico"
+      className={`sx-ico ${className}`.trim()}
       width={size}
       height={size}
       viewBox="0 0 24 24"
@@ -69,8 +73,8 @@ export function Ico({ name, size = 18, filled = false }) {
 
 /* ------------------------------------------------------------------
    Navigation helpers (same pushState + popstate approach as Home1)
-   navigate() now also scrolls to the top, so footer links always
-   open the next page from its beginning.
+   navigate() also scrolls to the top, so every link opens the next
+   page from its beginning.
 ------------------------------------------------------------------- */
 export function navigate(path) {
   window.history.pushState({}, '', path);
@@ -87,6 +91,40 @@ export function goHomeSection(hash = '') {
       if (target) target.scrollIntoView({ behavior: 'smooth' });
     }, 250);
   }
+}
+
+/* ------------------------------------------------------------------
+   Tiny front-end auth store (demo only, replace with your real API).
+   Keeps the signed-in user in localStorage and tells every mounted
+   header to refresh through a custom "amihive-auth" event.
+------------------------------------------------------------------- */
+const AUTH_KEY = 'amihive_user';
+
+export function getUser() {
+  try {
+    const raw = window.localStorage.getItem(AUTH_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function loginUser(user) {
+  try {
+    window.localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+  } catch (e) {
+    /* storage can be blocked, the session simply will not persist */
+  }
+  window.dispatchEvent(new Event('amihive-auth'));
+}
+
+export function logoutUser() {
+  try {
+    window.localStorage.removeItem(AUTH_KEY);
+  } catch (e) {
+    /* ignore */
+  }
+  window.dispatchEvent(new Event('amihive-auth'));
 }
 
 /* Toast hook: const [toastNode, showToast] = useToast(); render {toastNode} */
@@ -140,7 +178,7 @@ export function TopTicker() {
 
 /* ------------------------------------------------------------------
    HEADER  (dark petrol bar: hamburger + logo | search, wishlist,
-   cart, profile)
+   cart, account dropdown)
 ------------------------------------------------------------------- */
 const MENU = [
   { key: 'home', label: 'Home', path: '/' },
@@ -157,8 +195,135 @@ const MENU = [
   { key: 'account', label: 'My account', path: '/account' },
 ];
 
+const canHover = () =>
+  typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: hover)').matches;
+
+function AccountMenu({ user, active, onToast }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  /* close on outside click / Escape */
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+
+    document.addEventListener('mousedown', onDoc);
+    window.addEventListener('keydown', onKey);
+
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, []);
+
+  const go = (path) => () => {
+    setOpen(false);
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    setOpen(false);
+    logoutUser();
+    onToast && onToast('Signed out successfully.');
+  };
+
+  /* desktop: hover opens the menu and a click goes straight to the page.
+     touch devices: a tap toggles the menu. */
+  const handleButton = () => {
+    if (canHover()) {
+      setOpen(false);
+      navigate(user ? '/account' : '/login');
+    } else {
+      setOpen((o) => !o);
+    }
+  };
+
+  const initials = user ? `${user.first ? user.first[0] : ''}${user.last ? user.last[0] : ''}`.toUpperCase() || 'A' : '';
+
+  return (
+    <div
+      className="sx-acct"
+      ref={ref}
+      onMouseEnter={() => canHover() && setOpen(true)}
+      onMouseLeave={() => canHover() && setOpen(false)}
+    >
+      <button
+        type="button"
+        className={`sx-labelbtn ${active === 'account' || active === 'login' ? 'is-on' : ''}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={user ? 'Account menu' : 'Login menu'}
+        onClick={handleButton}
+      >
+        <Ico name="user" size={18} />
+        <span className="sx-labelbtn__text">{user ? user.first || 'Account' : 'Login'}</span>
+        <Ico name="down" size={14} className={`sx-acct__chev ${open ? 'is-open' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="sx-acct__pop">
+          <div className="sx-acct__card" role="menu">
+            {user ? (
+              <>
+                <div className="sx-acct__hello">
+                  <span className="sx-acct__avatar">{initials}</span>
+                  <div>
+                    <span>Hello,</span>
+                    <strong>
+                      {user.first} {user.last}
+                    </strong>
+                  </div>
+                </div>
+
+                <button type="button" role="menuitem" className="sx-acct__item" onClick={go('/account')}>
+                  <Ico name="user" size={18} /> My account
+                </button>
+
+                <button type="button" role="menuitem" className="sx-acct__item" onClick={go('/help')}>
+                  <Ico name="help" size={18} /> Help &amp; FAQ
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="sx-acct__item sx-acct__item--danger"
+                  onClick={handleLogout}
+                >
+                  <Ico name="logout" size={18} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" className="sx-btn sx-btn--signal sx-btn--sm sx-acct__login" onClick={go('/login')}>
+                  Login
+                </button>
+
+                <p className="sx-acct__new">
+                  New customer?
+                  <button type="button" onClick={go('/signup')}>
+                    Sign Up
+                  </button>
+                </p>
+
+                <button type="button" role="menuitem" className="sx-acct__item" onClick={go('/help')}>
+                  <Ico name="help" size={18} /> Help &amp; FAQ
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast }) {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState(getUser);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -167,6 +332,19 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  /* keep the account menu in sync with login / logout anywhere in the app */
+  useEffect(() => {
+    const sync = () => setUser(getUser());
+
+    window.addEventListener('amihive-auth', sync);
+    window.addEventListener('storage', sync);
+
+    return () => {
+      window.removeEventListener('amihive-auth', sync);
+      window.removeEventListener('storage', sync);
+    };
   }, []);
 
   const handleItem = (item) => () => {
@@ -227,14 +405,7 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
               <span className="sx-labelbtn__badge">{cartCount}</span>
             </button>
 
-            <button
-              type="button"
-              className={`sx-iconbtn ${active === 'account' ? 'is-on' : ''}`}
-              aria-label="Profile"
-              onClick={() => navigate('/account')}
-            >
-              <Ico name="user" size={19} />
-            </button>
+            <AccountMenu user={user} active={active} onToast={onToast} />
           </div>
         </div>
 
@@ -251,6 +422,16 @@ export function SiteHeader({ active = '', wishCount = 0, cartCount = 0, onToast 
                   {item.label}
                 </button>
               ))}
+
+              {!user && (
+                <button
+                  type="button"
+                  className={`sx-menu__link ${active === 'login' ? 'is-active' : ''}`}
+                  onClick={handleItem({ path: '/login' })}
+                >
+                  Login / Sign up
+                </button>
+              )}
             </div>
           </nav>
         )}
@@ -295,6 +476,7 @@ const FOOT_CARE = [
 
 const FOOT_QUICK = [
   { label: 'Home', path: '/' },
+  { label: 'Login / Sign up', path: '/login' },
   { label: 'Help & FAQ', path: '/help' },
   { label: 'Contact Us', path: '/contact' },
   { label: 'About Us', path: '/about' },

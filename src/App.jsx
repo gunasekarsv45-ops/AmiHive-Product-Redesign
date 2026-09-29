@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './pages/Customer/Shared/Unify.css';
 import Home1 from './pages/Customer/Home1/Home1';
 import ProductRedesign1 from './pages/Customer/ProductRedesign1/ProductRedesign1';
 import Categories from './pages/Customer/Categories/Categories';
@@ -16,6 +17,10 @@ import TrackOrder from './pages/Customer/TrackOrder/TrackOrder';
 import Wishlist from './pages/Customer/Wishlist/Wishlist';
 import AddAddress from './pages/Customer/AddAddress/AddAddress';
 import AddressManagement from './pages/Customer/AddressManagement/AddressManagement';
+import Login from './pages/Customer/Auth/Login';
+import Signup from './pages/Customer/Auth/Signup';
+import ForgotPassword from './pages/Customer/Auth/ForgotPassword';
+import Checkout from './pages/Customer/Checkout/Checkout';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -77,6 +82,10 @@ const SIMPLE_ROUTES = {
   '/wishlist': 'wishlist',
   '/add-address': 'add-address',
   '/addresses': 'addresses',
+  '/login': 'login',
+  '/signup': 'signup',
+  '/forgot-password': 'forgot-password',
+  '/checkout': 'checkout',
 };
 
 function getRoute() {
@@ -118,12 +127,13 @@ function App() {
   const goHome = () => {
     window.history.pushState({}, '', '/');
     window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo(0, 0);
   };
 
   return (
     <ErrorBoundary>
       {route.page === 'product' && (
-        <ProductRedesign1 productId={route.productId} onBack={goHome} />
+        <ProductRedesign1 key={route.search} productId={route.productId} onBack={goHome} />
       )}
 
       {/* key={route.search} so ?cat=strap or ?tab=orders re-reads the URL
@@ -147,6 +157,13 @@ function App() {
       {route.page === 'wishlist' && <Wishlist />}
       {route.page === 'add-address' && <AddAddress />}
       {route.page === 'addresses' && <AddressManagement />}
+
+      {/* auth pages: key={route.search} keeps ?next=... in sync */}
+      {route.page === 'login' && <Login key={route.search} />}
+      {route.page === 'signup' && <Signup key={route.search} />}
+      {route.page === 'forgot-password' && <ForgotPassword key={route.search} />}
+
+      {route.page === 'checkout' && <Checkout key={route.search} search={route.search} />}
 
       {route.page === 'home' && <Home1 />}
       {route.page === 'notfound' && <NotFound />}

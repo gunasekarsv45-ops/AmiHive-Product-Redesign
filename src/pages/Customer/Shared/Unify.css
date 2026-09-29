@@ -1,0 +1,240 @@
+/* Professional font for item names and prices (loaded once here) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
+
+/* ==================================================================
+   UNIFY — one font family, one colour set and one set of sizes for
+   the Home page and its gallery, so they match Categories, Product,
+   Account and every other page. Loaded once from App.jsx.
+   Specificity (.sx-root .ah-root) beats Home1.css on purpose.
+   ================================================================== */
+.sx-root,
+.sx-root .ah-root {
+  --font-item: 'Inter', 'Instrument Sans', system-ui, sans-serif;
+  --font-price: 'Inter', 'Instrument Sans', system-ui, sans-serif;
+}
+
+.sx-root .ah-root {
+  --ink: #171B1B;
+  --petrol: #123B3A;
+  --petrol-2: #0D2D2C;
+  --signal: #C7A66A;
+  --signal-dark: #B28E52;
+  --steel: #D7CFBB;
+  --mist: #DDE9E4;
+  --paper: #F7F6F2;
+  --line: #E7E1D2;
+  --muted: #707776;
+  --ok: #34745F;
+  --star: #C7A66A;
+  --font-display: 'Playfair Display', 'Instrument Sans', serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
+}
+
+/* ---------- buttons: same shape / case / weight as sx-btn ---------- */
+.sx-root .ah-btn {
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sx-root .ah-btn--sm {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 12px;
+}
+
+.sx-root .ah-btn--signal,
+.sx-root .ah-btn--signal:hover {
+  color: var(--ink);
+}
+
+.sx-root .ah-btn--signal {
+  box-shadow: 0 8px 20px -12px rgba(199, 166, 106, 0.55);
+}
+
+.sx-root .ah-btn--ink {
+  background: var(--petrol);
+}
+
+.sx-root .ah-btn--ink:hover {
+  background: var(--petrol-2);
+}
+
+.sx-root .ah-btn--line {
+  background: var(--petrol);
+  border-color: var(--petrol);
+}
+
+.sx-root .ah-btn--line:hover {
+  background: var(--petrol-2);
+  border-color: var(--petrol-2);
+}
+
+/* add-to-cart buttons on product cards = same green as Categories */
+.sx-root .ah-card__body .ah-btn,
+.sx-root .ah-deal__body .ah-btn {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #fff;
+}
+
+.sx-root .ah-card__body .ah-btn:hover,
+.sx-root .ah-deal__body .ah-btn:hover {
+  background: #2C604F;
+  border-color: #2C604F;
+}
+
+/* ---------- headings: same family and size everywhere ---------- */
+.sx-root .ah-head h2,
+.sx-root .ah-build h2,
+.sx-root .ah-news h2,
+.sx-root .ah-story__copy h2,
+.sx-root .pg__head h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.sx-root .ah-slide__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(34px, 5vw, 62px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.sx-root .ah-voices__main blockquote {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 2.6vw, 34px);
+  letter-spacing: -0.01em;
+}
+
+.sx-root .pg__cap strong,
+.sx-root .pg-lb__figure strong {
+  font-family: var(--font-display);
+}
+
+/* ---------- product cards: same gaps between name, text and price ---------- */
+.sx-root .ah-card__media {
+  aspect-ratio: 4 / 4.6;
+}
+
+.sx-root .ah-card__body,
+.sx-root .ah-deal__body {
+  gap: 4px;
+  padding: 14px;
+}
+
+.sx-root .ah-card__body .ah-rating,
+.sx-root .ah-deal__body .ah-rating {
+  margin-top: 4px;
+}
+
+.sx-root .ah-card__body .ah-price,
+.sx-root .ah-deal__body .ah-price {
+  margin-top: 6px;
+}
+
+.sx-root .ah-price s {
+  font-size: 13px;
+}
+
+.sx-root .ah-card__body .ah-price + .ah-btn,
+.sx-root .ah-deal__body .ah-save + .ah-btn {
+  margin-top: 12px;
+}
+
+/* ==================================================================
+   ITEM NAMES — Inter, semibold, same on every page
+   ================================================================== */
+.sx-root .ah-card__body > strong,
+.sx-root .ah-deal__body > strong,
+.sx-root .cx-card__body > strong,
+.sx-root .pd-info h1,
+.sx-root .pd-fbt__item span,
+.sx-root .co-item__copy > strong {
+  font-family: var(--font-item);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  font-variant-numeric: lining-nums;
+}
+
+.sx-root .ah-card__body > strong,
+.sx-root .ah-deal__body > strong,
+.sx-root .cx-card__body > strong {
+  font-size: 16.5px;
+  line-height: 1.3;
+}
+
+.sx-root .pd-info h1 {
+  font-weight: 700;
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.sx-root .co-item__copy > strong {
+  font-size: 17px;
+}
+
+/* ==================================================================
+   PRICES — Inter, bold, lining + tabular numbers so digits line up
+   ================================================================== */
+.sx-root .ah-price strong,
+.sx-root .cx-price strong,
+.sx-root .pd-price strong,
+.sx-root .pd-fbt__item strong,
+.sx-root .pd-fbt__summary strong,
+.sx-root .co-item__price strong,
+.sx-root .co-row,
+.sx-root .co-row--total {
+  font-family: var(--font-price);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.sx-root .ah-price strong,
+.sx-root .cx-price strong {
+  font-size: 18px;
+}
+
+.sx-root .pd-price strong {
+  font-size: clamp(28px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sx-root .pd-fbt__summary strong {
+  font-size: 21px;
+}
+
+.sx-root .co-item__price strong {
+  font-size: 20px;
+}
+
+.sx-root .co-row--total {
+  font-size: 18px;
+}
+
+/* struck-through old prices and % off use the same numerals */
+.sx-root .ah-price s,
+.sx-root .cx-price s,
+.sx-root .pd-price s,
+.sx-root .co-item__price s,
+.sx-root .cx-price em,
+.sx-root .pd-price em,
+.sx-root .co-item__price em,
+.sx-root .pd-save,
+.sx-root .ah-save {
+  font-family: var(--font-price);
+  font-variant-numeric: lining-nums tabular-nums;
+}

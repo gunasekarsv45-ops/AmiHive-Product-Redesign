@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './Home1.css';
 import ProductGallery, { SmartImage, img } from './ProductGallery';
-import { TopTicker, SiteHeader, SiteFooter } from '../Shared/SiteChrome';
+import { TopTicker, SiteHeader, SiteFooter, navigate } from '../Shared/SiteChrome';
 
 /* ------------------------------------------------------------------
    CONSTANTS
@@ -30,6 +30,7 @@ export const ICONS = {
   plus: 'M12 5v14M5 12h14',
 };
 
+/* `to` is the in-app route each banner / category opens (no full reload) */
 const BANNERS = [
   {
     id: 'b1',
@@ -40,7 +41,7 @@ const BANNERS = [
     cta: 'Shop Aster',
     price: 'From ₹16,990',
     image: 'aster',
-    href: '#featured',
+    to: '/categories?cat=watch',
   },
   {
     id: 'b2',
@@ -51,7 +52,7 @@ const BANNERS = [
     cta: 'View offers',
     price: 'From ₹16,990',
     image: 'blackDial',
-    href: '#deals',
+    to: '/offers',
   },
   {
     id: 'b3',
@@ -62,7 +63,7 @@ const BANNERS = [
     cta: 'Explore straps',
     price: 'From ₹2,990',
     image: 'jubilee',
-    href: '#featured',
+    to: '/categories?cat=strap',
   },
 ];
 
@@ -74,11 +75,11 @@ export const ASSURANCES = [
 ];
 
 const CATEGORIES = [
-  { name: 'Automatic watches', note: 'Self-winding, sapphire crystal', image: 'tanWrist', lead: true },
-  { name: 'Chronographs', note: 'Timing built in', image: 'studio' },
-  { name: 'Leather straps', note: 'Italian leather', image: 'strap' },
-  { name: 'Steel bracelets', note: 'Jubilee and link styles', image: 'jubilee' },
-  { name: 'Accessories and gifts', note: 'Rolls, cases, gift sets', image: 'desk' },
+  { name: 'Automatic watches', note: 'Self-winding, sapphire crystal', image: 'tanWrist', lead: true, to: '/categories?cat=watch' },
+  { name: 'Chronographs', note: 'Timing built in', image: 'studio', to: '/categories?cat=watch' },
+  { name: 'Leather straps', note: 'Italian leather', image: 'strap', to: '/categories?cat=strap' },
+  { name: 'Steel bracelets', note: 'Jubilee and link styles', image: 'jubilee', to: '/categories?cat=strap' },
+  { name: 'Accessories and gifts', note: 'Rolls, cases, gift sets', image: 'desk', to: '/categories?cat=accessory' },
 ];
 
 export const DEALS = [
@@ -173,6 +174,7 @@ export const formatPrice = (value) => new Intl.NumberFormat('en-IN').format(valu
 export function goToProductPage(id) {
   window.history.pushState({}, '', `/product?id=${id}`);
   window.dispatchEvent(new PopStateEvent('popstate'));
+  window.scrollTo(0, 0);
 }
 
 function msUntilMidnight() {
@@ -476,13 +478,14 @@ function Home1() {
     toggleWishlist(id);
   };
 
-  const handleCategoryClick = () => {
-    const target = document.getElementById('featured');
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  /* open another page of the app without a full reload */
+  const handleNav = (path) => (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    navigate(path);
   };
 
-  const handleCategoryKeyDown = (e) => {
-    if (e.key === 'Enter') handleCategoryClick();
+  const handleNavKeyDown = (path) => (e) => {
+    if (e.key === 'Enter') navigate(path);
   };
 
   const toggleFaq = (i) => () => setOpenFaq((cur) => (cur === i ? null : i));
@@ -528,7 +531,12 @@ function Home1() {
                     </p>
 
                     <div className="ah-slide__actions ah-rise" style={{ '--d': 3 }}>
-                      <a className="ah-btn ah-btn--signal" href={b.href} tabIndex={i === active ? 0 : -1}>
+                      <a
+                        className="ah-btn ah-btn--signal"
+                        href={b.to}
+                        onClick={handleNav(b.to)}
+                        tabIndex={i === active ? 0 : -1}
+                      >
                         {b.cta}
                       </a>
                       <span className="ah-slide__price">{b.price}</span>
@@ -611,7 +619,7 @@ function Home1() {
             </div>
           </section>
 
-          {/* ---------- categories ---------- */}
+          {/* ---------- categories (each tile opens the Categories page) ---------- */}
           <section className="ah-section" id="categories">
             <div className="ah-wrap">
               <div className="ah-head">
@@ -627,8 +635,8 @@ function Home1() {
                     style={{ '--i': i, cursor: 'pointer' }}
                     role="link"
                     tabIndex={0}
-                    onClick={handleCategoryClick}
-                    onKeyDown={handleCategoryKeyDown}
+                    onClick={handleNav(c.to)}
+                    onKeyDown={handleNavKeyDown(c.to)}
                   >
                     <SmartImage className="ah-tile__img" src={img(c.image, c.lead ? 1000 : 700)} alt="" />
 
@@ -642,6 +650,12 @@ function Home1() {
                     </span>
                   </div>
                 ))}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+                <a className="ah-btn ah-btn--ink" href="/categories" onClick={handleNav('/categories')}>
+                  Browse all categories
+                </a>
               </div>
             </div>
           </section>
@@ -729,6 +743,12 @@ function Home1() {
                   </article>
                 ))}
               </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 28 }}>
+                <a className="ah-btn ah-btn--ink" href="/offers" onClick={handleNav('/offers')}>
+                  See all offers &amp; coupons
+                </a>
+              </div>
             </div>
           </section>
 
@@ -812,6 +832,16 @@ function Home1() {
                   ))}
                 </div>
               )}
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 36 }}>
+                <a
+                  className="ah-btn ah-btn--signal"
+                  href="/categories"
+                  onClick={handleNav(filter === 'all' ? '/categories' : `/categories?cat=${filter}`)}
+                >
+                  View all products
+                </a>
+              </div>
             </div>
           </section>
 
@@ -830,6 +860,15 @@ function Home1() {
                   <strong>{review.name}</strong>
                   <em>Verified purchase, {review.date}</em>
                 </p>
+
+                <a
+                  className="ah-btn ah-btn--ink ah-btn--sm"
+                  href="/reviews"
+                  onClick={handleNav('/reviews')}
+                  style={{ marginTop: 24 }}
+                >
+                  Read all reviews
+                </a>
               </div>
 
               <div className="ah-voices__list" role="tablist" aria-label="Choose review">
@@ -888,9 +927,14 @@ function Home1() {
                   ))}
                 </div>
 
-                <a className="ah-btn ah-btn--ink" href="#featured">
-                  Shop the collection
-                </a>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 28 }}>
+                  <a className="ah-btn ah-btn--ink" href="/categories" onClick={handleNav('/categories')} style={{ marginTop: 0 }}>
+                    Shop the collection
+                  </a>
+                  <a className="ah-btn ah-btn--line" href="/about" onClick={handleNav('/about')} style={{ marginTop: 0 }}>
+                    About Amihive
+                  </a>
+                </div>
               </div>
             </div>
           </section>
@@ -923,6 +967,12 @@ function Home1() {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 28 }}>
+                <a className="ah-btn ah-btn--ink" href="/help" onClick={handleNav('/help')}>
+                  More answers in Help &amp; FAQ
+                </a>
               </div>
             </div>
           </section>
