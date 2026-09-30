@@ -675,6 +675,7 @@
 .cx-card {
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -1260,17 +1261,33 @@
   }
 
   /* ----------------------------------------------------------------
-     MOBILE FIX — product card alignment (grid view, 2 columns)
-     Every card in a row now has the same internal layout:
-     fixed 2-line title, fixed 2-line subtitle, fixed price block,
-     and the button is always pinned to the bottom of the card.
+     MOBILE FIX v2 — product card alignment (grid view, 2 columns)
+
+     Root cause of the "one up, one down" look: the price block used
+     flex-wrap, so a card with a discount could wrap onto 2 lines while
+     its neighbour stayed on 1 line, pushing the delivery line and the
+     button out of line.
+
+     Now every card has an identical, fixed-height layout:
+       row 1  ->  media (fixed ratio)
+       row 2  ->  collection line (1 line)
+       row 3  ->  title (2 lines reserved)
+       row 4  ->  subtitle (2 lines reserved)
+       row 5  ->  rating (1 line)
+       row 6  ->  price grid: current price on line 1,
+                  old price + % off always on line 2 (reserved even
+                  when there is no discount)
+       row 7  ->  delivery line (1 line)
+       row 8  ->  button, pinned to the bottom of the card
      Desktop and mobile list view are not affected.
      ---------------------------------------------------------------- */
   .cx-grid:not(.cx-grid--list) .cx-card {
     min-width: 0;
+    height: 100%;
   }
 
   .cx-grid:not(.cx-grid--list) .cx-card__body {
+    flex: 1;
     gap: 3px;
   }
 
@@ -1309,34 +1326,62 @@
     min-height: 2.7em;
   }
 
-  /* rating row: stays on one line */
+  /* rating row: fixed one-line height */
   .cx-grid:not(.cx-grid--list) .cx-card__rate {
     flex-wrap: nowrap;
+    height: 18px;
     min-height: 18px;
+    margin-top: 2px;
     font-size: 11.5px;
     white-space: nowrap;
     overflow: hidden;
   }
 
-  /* price block: same height whether or not there is a discount */
+  /* price block: 2 fixed rows, never wraps differently between cards */
   .cx-grid:not(.cx-grid--list) .cx-price {
-    align-content: flex-start;
-    gap: 2px 6px;
-    min-height: 42px;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-rows: 22px 18px;
+    align-items: center;
+    column-gap: 6px;
+    row-gap: 2px;
+    height: 44px;
+    min-height: 44px;
     margin-top: 6px;
   }
 
+  /* current price: full first row */
   .cx-grid:not(.cx-grid--list) .cx-price strong {
+    grid-column: 1 / -1;
+    grid-row: 1;
     font-size: 16.5px;
+    line-height: 22px;
+    white-space: nowrap;
   }
 
-  .cx-grid:not(.cx-grid--list) .cx-price s,
-  .cx-grid:not(.cx-grid--list) .cx-price em {
+  /* old price: second row, first column */
+  .cx-grid:not(.cx-grid--list) .cx-price s {
+    grid-column: 1;
+    grid-row: 2;
     font-size: 12px;
+    line-height: 18px;
+    white-space: nowrap;
   }
 
-  /* delivery line: single line */
+  /* % off: second row, next to the old price */
+  .cx-grid:not(.cx-grid--list) .cx-price em {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 12px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  /* delivery line: single fixed line */
   .cx-grid:not(.cx-grid--list) .cx-card__ship {
+    height: 18px;
+    margin-top: 2px;
+    margin-bottom: 10px;
     font-size: 11.5px;
     white-space: nowrap;
     overflow: hidden;
@@ -1352,10 +1397,5 @@
     font-size: 11px;
     letter-spacing: 0.04em;
     white-space: nowrap;
-  }
-
-  /* small gap between the delivery line and the pinned button */
-  .cx-grid:not(.cx-grid--list) .cx-card__ship {
-    margin-bottom: 10px;
   }
 }
